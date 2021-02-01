@@ -1,0 +1,26 @@
+{
+  "name": "bububblebot",
+  "version": "0.0.1",
+  "description": "Telegram bot for creating bubble sticker pack for chats.",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node src/index.js",
+    "prod": "npm run build && npm run start"
+  },
+  "keywords": [
+    "telegram",
+    "stickers",
+    "bot"
+  ],
+  "author": "Pool Party Corp.",
+  "license": "MIT",
+  "repository": "github:pool-party/bubblifier-bot",
+  "dependencies": {
+    "@types/node": "^14.14.22",
+    "eslint": "^7.19.0",
+    "prettifier": "^0.4.0",
+    "telegraf": "^4.0.2"
+  },
+  "eslintConfig": {}
+}
