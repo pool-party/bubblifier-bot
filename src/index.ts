@@ -2,7 +2,7 @@ import { Telegraf } from "telegraf";
 import { BotCommand } from "telegraf/src/telegram-types";
 
 const token = process.env.BOT_TOKEN;
-if (token === undefined) {
+if (!token) {
   throw new Error("BOT_TOKEN must be provided");
 }
 
@@ -15,7 +15,7 @@ bot.use(async (ctx, next) => {
   console.timeEnd(updateString);
 });
 
-bot.command("bubble", async (ctx) => {
+bot.command("bubble", async (/*ctx*/) => {
   // TODO
   // const chat = await ctx.getChat();
   // await ctx.createNewStickerSet(chat.id.toString(), chat.id.toString());
@@ -52,7 +52,7 @@ bot.help(async (ctx) => {
 bot
   .launch()
   .then(() => console.log("Bot launched"))
-  .catch((err) => console.log(err));
+  .catch(console.error);
 
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));

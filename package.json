@@ -4,10 +4,10 @@
   "description": "telegram bot for bubble sticker packs creation",
   "main": "src/index.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
     "format": "prettier --write \"**/*.{ts,json,md}\"",
     "lint": "eslint \"**/*.ts\"",
-    "start": "node src/index.js",
+    "start": "node build/index.js",
     "prod": "npm run build && npm run start"
   },
   "keywords": [
@@ -23,6 +23,7 @@
     "telegraf": "^4.0.2"
   },
   "devDependencies": {
+    "@types/node-fetch": "^2.5.8",
     "@typescript-eslint/eslint-plugin": "^4.14.2",
     "@typescript-eslint/parser": "^4.14.2",
     "eslint": "^7.19.0",
