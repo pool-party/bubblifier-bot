@@ -1,7 +1,7 @@
 import { Telegraf } from "telegraf";
 import { BotCommand } from "telegraf/src/telegram-types";
 
-const token = process.env.BOT_TOKEN
+const token = process.env.BOT_TOKEN;
 if (token === undefined) {
   throw new Error("BOT_TOKEN must be provided");
 }
@@ -13,7 +13,7 @@ bot.use(async (ctx, next) => {
   console.time(updateString);
   await next();
   console.timeEnd(updateString);
-})
+});
 
 bot.command("bubble", async (ctx) => {
   // TODO
@@ -25,13 +25,13 @@ bot.command("bubble", async (ctx) => {
 bot.settings(async (ctx) => {
   const commands: readonly BotCommand[] = [
     {
-      "command": "/bubble",
-      "description": "some description"
+      command: "/bubble",
+      description: "some description",
     },
     {
-      "command": "/help",
-      "description": "display this message"
-    }
+      command: "/help",
+      description: "display this message",
+    },
   ];
 
   const commandList = commands.map((command) => `${command.command} - ${command.description}`).join("\n");
@@ -49,7 +49,8 @@ bot.help(async (ctx) => {
   return ctx.reply(`Available commands:\n${info}`);
 });
 
-bot.launch()
+bot
+  .launch()
   .then(() => console.log("Bot launched"))
   .catch((err) => console.log(err));
 
