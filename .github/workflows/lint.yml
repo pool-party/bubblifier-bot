@@ -20,11 +20,3 @@ jobs:
       uses: icrawl/action-eslint@v1
       with:
         custom-glob: src
-
-    - name: prettify
-      uses: creyD/prettier_action@v3.1
-      with:
-        dry: True
-        file_pattern: src/*.ts
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
