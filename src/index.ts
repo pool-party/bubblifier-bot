@@ -1,5 +1,6 @@
 import { Telegraf } from "telegraf";
 import { BotCommand } from "telegraf/src/telegram-types";
+import { PrismaClient } from "@prisma/client";
 
 const token = process.env.BOT_TOKEN;
 if (!token) {
@@ -7,6 +8,10 @@ if (!token) {
 }
 
 const bot = new Telegraf(token);
+
+const prisma = new PrismaClient({
+  log: [{ emit: 'event', level: 'query' }]
+});
 
 bot.use(async (ctx, next) => {
   const updateString = `Processing ${ctx.updateType} (${ctx.update.update_id}) in ${ctx.chat?.id}`;
@@ -52,7 +57,8 @@ bot.help(async (ctx) => {
 bot
   .launch()
   .then(() => console.log("Bot launched"))
-  .catch(console.error);
+  .catch(console.error)
+  .finally(async () => await prisma.$disconnect());
 
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));

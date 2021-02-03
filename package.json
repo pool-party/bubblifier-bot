@@ -20,9 +20,11 @@
   "repository": "github:pool-party/bubblifier-bot",
   "dependencies": {
     "@types/node": "^14.14.22",
+    "prisma": "^2.16.0",
     "telegraf": "^4.0.2"
   },
   "devDependencies": {
+    "@prisma/client": "2.16.0",
     "@types/node-fetch": "^2.5.8",
     "@typescript-eslint/eslint-plugin": "^4.14.2",
     "@typescript-eslint/parser": "^4.14.2",

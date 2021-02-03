@@ -1,0 +1,14 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["nativeTypes"]
+}
+
+model StickerPack {
+  chatId        BigInt @id     @db.BigInt
+  stickerPackId BigInt @unique @db.BigInt
+}
