@@ -9,6 +9,7 @@ generator client {
 }
 
 model StickerPack {
-  chatId        BigInt @id     @db.BigInt
-  stickerPackId BigInt @unique @db.BigInt
+  chatId BigInt @id     @db.BigInt
+  userId BigInt         @db.BigInt
+  name   String @unique
 }
