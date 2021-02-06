@@ -1,6 +1,6 @@
-import { Telegraf } from "telegraf";
-import { BotCommand } from "telegraf/src/telegram-types";
-import { PrismaClient, StickerPack } from "@prisma/client";
+import {Telegraf} from "telegraf";
+import {BotCommand} from "telegraf/src/telegram-types";
+import {PrismaClient, StickerPack} from "@prisma/client";
 import sharp from "sharp";
 import got from "got";
 
@@ -17,7 +17,7 @@ if (!botName) {
 const bot = new Telegraf(token);
 
 const prisma = new PrismaClient({
-  log: [{ emit: 'event', level: 'query' }]
+  log: [{emit: 'event', level: 'query'}]
 });
 
 bot.command("bubble", async (ctx) => {
@@ -27,7 +27,7 @@ bot.command("bubble", async (ctx) => {
     return;
   }
 
-  let stickerPack = await prisma.stickerPack.findUnique({ where: { chatId: chatId } });
+  let stickerPack = await prisma.stickerPack.findUnique({where: {chatId: chatId}});
 
   if (!stickerPack) {
     const sender = ctx.from?.id;
@@ -63,9 +63,10 @@ bot.command("bubble", async (ctx) => {
       case "supergroup":
         title = chat.title;
         break;
-      case "private":
+      case "private": {
         const lastName = chat.last_name;
         title = `${chat.first_name}${lastName ? ` ${lastName}` : ""}`;
+      }
     }
     title = `${title} bubbles`;
 
@@ -73,7 +74,7 @@ bot.command("bubble", async (ctx) => {
     console.log(`Creating sticker pack "${title}" (https://t.me/addstickers/${stickerPackName}) with ${ctx.from?.username} owner`);
 
     await ctx.createNewStickerSet(stickerPackName, title, {
-      png_sticker: { source: "assets/logo-512.png" },
+      png_sticker: {source: "assets/logo-512.png"},
       emojis: "💭"
     }).catch(error => {
       console.error(error);
@@ -86,15 +87,15 @@ bot.command("bubble", async (ctx) => {
       name: stickerPackName,
     };
 
-    await prisma.stickerPack.create({ data: newStickerPack });
+    await prisma.stickerPack.create({data: newStickerPack});
     stickerPack = newStickerPack;
 
     const photoBuffer = await got.stream(chatPhotoDownloadLink)
-      .pipe(sharp({ failOnError: false }))
+      .pipe(sharp({failOnError: false}))
       .resize(100, 100)
       .toBuffer();
 
-    const settingThumbResult = await ctx.setStickerSetThumb(stickerPackName, sender, { source: photoBuffer });
+    const settingThumbResult = await ctx.setStickerSetThumb(stickerPackName, sender, {source: photoBuffer});
     console.log(`Setting sticker pack thumb: ${settingThumbResult}`);
   }
 
