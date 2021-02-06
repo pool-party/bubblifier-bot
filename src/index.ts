@@ -73,7 +73,7 @@ bot.command("bubble", async (ctx) => {
     console.log(`Creating sticker pack "${title}" (https://t.me/addstickers/${stickerPackName}) with ${ctx.from?.username} owner`);
 
     await ctx.createNewStickerSet(stickerPackName, title, {
-      png_sticker: { source: "src/logo-512.png" },
+      png_sticker: { source: "assets/logo-512.png" },
       emojis: "💭"
     }).catch(error => {
       console.error(error);
