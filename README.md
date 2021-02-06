@@ -2,7 +2,7 @@
 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square&logo=prettier)](https://github.com/prettier/prettier)
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/pool-party/bubblifier-bot?logo=codefactor)](https://www.codefactor.io/repository/github/pool-party/bubblifier-bot)
-[![TypeScript Lang](https://img.shields.io/github/languages/top/pool-party/bubblifier-bot?logo=TypeScript)](https://typescriptlang.org/)
+[![TypeScript Lang](https://img.shields.io/github/languages/top/pool-party/bubblifier-bot?logo=TypeScript)](http://typescriptlang.org/)
 [![Bubblifier Bot](https://img.shields.io/badge/telegram-Bubblifier_Bot-blue?logo=Telegram)](https://t.me/BubblifierBot/)
 
 ## Usage guide
@@ -16,7 +16,7 @@ following commands:
 
 ## Tools and Libraries
 
-+ [TypeScript](https://typescriptlang.org/) language
++ [TypeScript](http://typescriptlang.org/) language
 
 + [npm](https://npmjs.com/) - JavaScript programming language package manager
 
@@ -30,7 +30,7 @@ following commands:
 
 + [Telegraf](https://telegraf.js.org/) - Modern Telegram Bot Framework for Node.js
 
-+ [sharp](https://gtihub.com/lovell/sharp/) - High performance Node.js image processing,
++ [sharp](https://github.com/lovell/sharp/) - High performance Node.js image processing,
   the fastest module to resize JPEG, PNG, WebP, AVIF and TIFF images
 
 + [got](https://github.com/sindresorhus/got/) - Human-friendly and powerful HTTP request library for Node.js
