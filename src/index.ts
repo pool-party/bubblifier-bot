@@ -1,6 +1,6 @@
-import {Telegraf} from "telegraf";
-import {BotCommand} from "telegraf/src/telegram-types";
-import {PrismaClient, StickerPack} from "@prisma/client";
+import { Telegraf } from "telegraf";
+import { BotCommand } from "telegraf/src/telegram-types";
+import { PrismaClient, StickerPack } from "@prisma/client";
 import sharp from "sharp";
 import got from "got";
 
@@ -17,7 +17,7 @@ if (!botName) {
 const bot = new Telegraf(token);
 
 const prisma = new PrismaClient({
-  log: [{emit: 'event', level: 'query'}]
+  log: [{ emit: "event", level: "query" }],
 });
 
 bot.command("bubble", async (ctx) => {
@@ -27,7 +27,7 @@ bot.command("bubble", async (ctx) => {
     return;
   }
 
-  let stickerPack = await prisma.stickerPack.findUnique({where: {chatId: chatId}});
+  let stickerPack = await prisma.stickerPack.findUnique({ where: { chatId: chatId } });
 
   if (!stickerPack) {
     const sender = ctx.from?.id;
@@ -43,7 +43,7 @@ bot.command("bubble", async (ctx) => {
       return;
     }
 
-    const chatPhotoId = await ctx.getChat().then(chat => chat.photo?.small_file_id);
+    const chatPhotoId = await ctx.getChat().then((chat) => chat.photo?.small_file_id);
     if (!chatPhotoId) {
       console.log("No chat photo is provided");
       return;
@@ -71,15 +71,19 @@ bot.command("bubble", async (ctx) => {
     title = `${title} bubbles`;
 
     const stickerPackName = `${chatId.toString().replace("-", "minus")}_by_${botName}`;
-    console.log(`Creating sticker pack "${title}" (https://t.me/addstickers/${stickerPackName}) with ${ctx.from?.username} owner`);
+    console.log(
+      `Creating sticker pack "${title}" (https://t.me/addstickers/${stickerPackName}) with ${ctx.from?.username} owner`
+    );
 
-    await ctx.createNewStickerSet(stickerPackName, title, {
-      png_sticker: {source: "assets/logo-512.png"},
-      emojis: "💭"
-    }).catch(error => {
-      console.error(error);
-      ctx.reply("Failed to create a new sticker pack");
-    });
+    await ctx
+      .createNewStickerSet(stickerPackName, title, {
+        png_sticker: { source: "assets/logo-512.png" },
+        emojis: "💭",
+      })
+      .catch((error) => {
+        console.error(error);
+        ctx.reply("Failed to create a new sticker pack");
+      });
 
     const newStickerPack: StickerPack = {
       chatId: BigInt(chatId),
@@ -87,15 +91,16 @@ bot.command("bubble", async (ctx) => {
       name: stickerPackName,
     };
 
-    await prisma.stickerPack.create({data: newStickerPack});
+    await prisma.stickerPack.create({ data: newStickerPack });
     stickerPack = newStickerPack;
 
-    const photoBuffer = await got.stream(chatPhotoDownloadLink)
-      .pipe(sharp({failOnError: false}))
+    const photoBuffer = await got
+      .stream(chatPhotoDownloadLink)
+      .pipe(sharp({ failOnError: false }))
       .resize(100, 100)
       .toBuffer();
 
-    const settingThumbResult = await ctx.setStickerSetThumb(stickerPackName, sender, {source: photoBuffer});
+    const settingThumbResult = await ctx.setStickerSetThumb(stickerPackName, sender, { source: photoBuffer });
     console.log(`Setting sticker pack thumb: ${settingThumbResult}`);
   }
 
