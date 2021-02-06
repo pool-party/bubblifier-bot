@@ -20,7 +20,10 @@
   "repository": "github:pool-party/bubblifier-bot",
   "dependencies": {
     "@types/node": "^14.14.22",
+    "@types/sharp": "^0.27.1",
+    "got": "^11.8.1",
     "prisma": "^2.16.0",
+    "sharp": "^0.27.1",
     "telegraf": "^4.0.2"
   },
   "devDependencies": {
