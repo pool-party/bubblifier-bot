@@ -1,8 +1,11 @@
-*, :after, :before {
+*,
+:after,
+:before {
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   padding: 0;
@@ -53,30 +56,30 @@ html, body {
 
   z-index: 2;
 
-  box-shadow: 0 2px 1px 0 rgba(160, 172, 182, .5);
+  box-shadow: 0 2px 1px 0 rgba(160, 172, 182, 0.5);
 }
 
 .message.my-message {
   align-self: flex-end;
   background-color: #effdde;
-  box-shadow: 0 2px 1px 0 rgba(93, 196, 82, .5);
+  box-shadow: 0 2px 1px 0 rgba(93, 196, 82, 0.5);
 }
 
 .message.droplet:before {
   position: absolute;
-  content: '';
+  content: "";
   bottom: 0;
   left: -8px;
   width: 12px;
   height: 1px;
   background-color: inherit;
   z-index: 1;
-  box-shadow: 0 1px 1px 1px rgba(160, 172, 182, .5);
+  box-shadow: 0 1px 1px 1px rgba(160, 172, 182, 0.5);
 }
 
 .message.droplet:after {
   position: absolute;
-  content: '';
+  content: "";
   bottom: 0;
   left: -10px;
   width: 16px;
@@ -84,13 +87,13 @@ html, body {
   clip-path: url(#left-droplet);
   background-color: inherit;
   z-index: 1;
-  box-shadow: 0 2px 1px 0 rgba(160, 172, 182, .5);
+  box-shadow: 0 2px 1px 0 rgba(160, 172, 182, 0.5);
 }
 
 .message.my-message.droplet:before {
   right: -8px;
   left: initial;
-  box-shadow: 0 1px 1px 1px rgba(93, 196, 82, .5);
+  box-shadow: 0 1px 1px 1px rgba(93, 196, 82, 0.5);
 }
 
 .message.my-message.droplet:after {
@@ -150,9 +153,9 @@ html, body {
   right: 4px;
   padding: 4px;
   color: #fff;
-  background-color: rgba(38, 50, 56, .5);
+  background-color: rgba(38, 50, 56, 0.5);
   border-radius: 6px;
-  transition: opacity .2s linear;
+  transition: opacity 0.2s linear;
   opacity: 0;
 }
 
