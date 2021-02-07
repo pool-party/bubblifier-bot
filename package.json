@@ -19,16 +19,18 @@
   "license": "MIT",
   "repository": "github:pool-party/bubblifier-bot",
   "dependencies": {
-    "@types/node": "^14.14.22",
-    "@types/sharp": "^0.27.1",
     "got": "^11.8.1",
+    "jsdom": "^16.4.0",
     "prisma": "^2.16.0",
     "sharp": "^0.27.1",
     "telegraf": "^4.0.2"
   },
   "devDependencies": {
     "@prisma/client": "2.16.0",
+    "@types/jsdom": "^16.2.6",
+    "@types/node": "^14.14.22",
     "@types/node-fetch": "^2.5.8",
+    "@types/sharp": "^0.27.1",
     "@typescript-eslint/eslint-plugin": "^4.14.2",
     "@typescript-eslint/parser": "^4.14.2",
     "eslint": "^7.19.0",

@@ -1,0 +1,161 @@
+*, :after, :before {
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font: 13px/18px Tahoma, sans-serif, Arial, Helvetica;
+}
+
+.chat__body {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-image: url("https://raw.githubusercontent.com/telegramdesktop/tdesktop/dev/Telegram/Resources/art/bg_initial.jpg");
+  background-position-y: -54px;
+  background-attachment: fixed;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: flex-end;
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-bottom: 6px;
+}
+
+.chat__loader {
+  flex-grow: 1;
+  display: flex;
+  align-self: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.message {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+
+  position: relative;
+
+  min-height: 30px;
+  max-width: 420px;
+
+  background-color: #fff;
+  margin-bottom: 8px;
+  border-radius: 6px;
+
+  z-index: 2;
+
+  box-shadow: 0 2px 1px 0 rgba(160, 172, 182, .5);
+}
+
+.message.my-message {
+  align-self: flex-end;
+  background-color: #effdde;
+  box-shadow: 0 2px 1px 0 rgba(93, 196, 82, .5);
+}
+
+.message.droplet:before {
+  position: absolute;
+  content: '';
+  bottom: 0;
+  left: -8px;
+  width: 12px;
+  height: 1px;
+  background-color: inherit;
+  z-index: 1;
+  box-shadow: 0 1px 1px 1px rgba(160, 172, 182, .5);
+}
+
+.message.droplet:after {
+  position: absolute;
+  content: '';
+  bottom: 0;
+  left: -10px;
+  width: 16px;
+  height: 10px;
+  clip-path: url(#left-droplet);
+  background-color: inherit;
+  z-index: 1;
+  box-shadow: 0 2px 1px 0 rgba(160, 172, 182, .5);
+}
+
+.message.my-message.droplet:before {
+  right: -8px;
+  left: initial;
+  box-shadow: 0 1px 1px 1px rgba(93, 196, 82, .5);
+}
+
+.message.my-message.droplet:after {
+  right: -10px;
+  left: initial;
+  clip-path: url(#right-droplet);
+}
+
+.message__text,
+.message__image__text .message__text__content {
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  z-index: 2;
+}
+
+.message__image,
+.message__image__text {
+  position: relative;
+  z-index: 2;
+}
+
+.message__image {
+  border-radius: 6px;
+}
+
+.message__image__content {
+  border-radius: 6px;
+  margin-bottom: -3px;
+  max-width: 100%;
+}
+
+.with__caption {
+  border-radius: 6px 6px 0 0;
+}
+
+.message__time {
+  display: inline-block;
+  float: right;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 14px;
+  text-align: right;
+  line-height: 150%;
+  color: #a0acb6;
+}
+
+.my-message .message__time {
+  color: #5dc452;
+}
+
+.message__image .message__time {
+  display: block;
+  float: initial;
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  padding: 4px;
+  color: #fff;
+  background-color: rgba(38, 50, 56, .5);
+  border-radius: 6px;
+  transition: opacity .2s linear;
+  opacity: 0;
+}
+
+.message__image:hover .message__time {
+  opacity: 1;
+}

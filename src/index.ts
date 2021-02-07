@@ -1,8 +1,10 @@
+import got from "got";
+import sharp from "sharp";
 import { Telegraf } from "telegraf";
 import { BotCommand } from "telegraf/src/telegram-types";
 import { PrismaClient, StickerPack } from "@prisma/client";
-import sharp from "sharp";
-import got from "got";
+
+import page from "./components";
 
 const token = process.env.BOT_TOKEN;
 if (!token) {
@@ -102,6 +104,12 @@ bot.command("bubble", async (ctx) => {
 
     const settingThumbResult = await ctx.setStickerSetThumb(stickerPackName, sender, { source: photoBuffer });
     console.log(`Setting sticker pack thumb: ${settingThumbResult}`);
+  }
+
+  const message = page.getElementsByClassName(".message")[0];
+  if (!message) {
+    console.log("Couldn't find message html element");
+    return;
   }
 
   ctx.replyWithSticker((await ctx.getStickerSet(stickerPack.name)).stickers[0].file_id);
