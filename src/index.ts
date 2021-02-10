@@ -1,10 +1,13 @@
+import { Telegraf } from "telegraf";
+import { PrismaClient, StickerPack } from "@prisma/client";
+import chrome from "selenium-webdriver/chrome";
+import chromedriver from "chromedriver";
 import got from "got";
 import sharp from "sharp";
-import { Telegraf } from "telegraf";
+import { Builder, By, WebElement } from "selenium-webdriver";
+import { resolve } from "path";
+import { writeFile } from "fs";
 import { BotCommand } from "telegraf/src/telegram-types";
-import { PrismaClient, StickerPack } from "@prisma/client";
-
-import page from "./components";
 
 const token = process.env.BOT_TOKEN;
 if (!token) {
@@ -21,6 +24,8 @@ const bot = new Telegraf(token);
 const prisma = new PrismaClient({
   log: [{ emit: "event", level: "query" }],
 });
+
+chrome.setDefaultService(new chrome.ServiceBuilder(chromedriver.path).build());
 
 bot.command("bubble", async (ctx) => {
   const chatId = ctx.chat?.id;
@@ -106,11 +111,26 @@ bot.command("bubble", async (ctx) => {
     console.log(`Setting sticker pack thumb: ${settingThumbResult}`);
   }
 
-  const message = page.getElementsByClassName(".message")[0];
-  if (!message) {
-    console.log("Couldn't find message html element");
+  const element = await new Builder()
+    .forBrowser("chrome")
+    .build()
+    .then((driver) => {
+      driver.get(resolve("./src/components.html"));
+      return driver;
+    })
+    .then((it) => it.findElement(By.className("message")))
+    .catch(console.error);
+
+  if (!(element instanceof WebElement)) {
     return;
   }
+
+  // TODO change element
+
+  element
+    .takeScreenshot()
+    .then((img) => writeFile("./assets/screenshot.png", img, { flag: "w", encoding: "base64" }, console.error))
+    .catch(console.error);
 
   ctx.replyWithSticker((await ctx.getStickerSet(stickerPack.name)).stickers[0].file_id);
 });
