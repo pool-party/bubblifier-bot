@@ -1,17 +1,3 @@
-# dependencies
-node_modules
-package-lock.json
-.pnp
-.pnp.js
-
-# testing
-coverage
-
-# production
-build
-
-# misc
-.eslintcache
 .DS_Store
 .env.local
 .env.development.local
@@ -23,7 +9,3 @@ build
 *.nix
 .idea
 .vscode
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*

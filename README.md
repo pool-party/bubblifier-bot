@@ -5,52 +5,28 @@
 [![TypeScript Lang](https://img.shields.io/github/languages/top/pool-party/bubblifier-bot?logo=TypeScript)](http://typescriptlang.org/)
 [![Bubblifier Bot](https://img.shields.io/badge/telegram-Bubblifier_Bot-blue?logo=Telegram)](https://t.me/BubblifierBot/)
 
+<div align="center">
+    <img src="assets/title.png" width=50% alt="logo">
+</div>
+<p align="center">© 2020 Pool Party Corp. All rights reserved.</p>
+
 ## Usage guide
 
 Add [`@BubblifierBot`](https://t.me/BubblifierBot) to the chat to be able to create custom bubble sticker packs using
 following commands:
 
-+ `/bubble` - on first invocation it both creates a new sticker pack for the chat
+- `/bubble` - on first invocation it both creates a new sticker pack for the chat
   and adds referenced message bubble sticker, on the following invocations it only adds new bubble stickers to the
   existing pack
 
+## Structure
+
+![Project Structure](assets/project-schema.jpg)
+
 ## Tools and Libraries
 
-+ [TypeScript](http://typescriptlang.org/) language
+### Bubble rendering server ([client/](client/))
 
-+ [npm](https://npmjs.com/) - JavaScript programming language package manager
+- [TypeScript](http://typescriptlang.org/) language
 
-+ [Prettier](https://prettier.io/) - An opinionated code formatter
-
-+ [ESLint](https://eslint.org/) - Static code analyzer
-
-+ [Emoji commit messages guide](https://gitmoji.dev/)
-
-+ [Prisma](https://prisma.io/) - Next-generaion ORM for Node.js and TypeScript
-
-+ [Telegraf](https://telegraf.js.org/) - Modern Telegram Bot Framework for Node.js
-
-+ [sharp](https://github.com/lovell/sharp/) - High performance Node.js image processing,
-  the fastest module to resize JPEG, PNG, WebP, AVIF and TIFF images
-
-+ [got](https://github.com/sindresorhus/got/) - Human-friendly and powerful HTTP request library for Node.js
-
-## Launching
-
-### Building up a database
-
-+ Install [Prisma](https://prisma.io/)
-
-+ Run `prisma generate` to compile a custom `@prisma/client` to be used in code
-
-+ Provide a database url in `DATABASE_URL` environment variable
-
-+ Run `prisma migrate dev --preview-feature` to migrate your database
-
-### Environment variables
-
-+ Provide `DATABASE_URL` with database url you want to use
-
-+ Provide `BOT_TOKEN` - the one you get from [BotFather](https://t.me/BotFather)
-
-+ Provide `BOT_NAME` - the registered bot name
+- [React](https://reactjs.org/) - a JavaScript library for building user interfaces
