@@ -1,0 +1,25 @@
+[package]
+name = "bubblifier-bot"
+version = "0.0.1"
+edition = "2018"
+description = "Telegram Bubblifier Bot"
+homepage = "https://github.com/pool-party/bubblifier-bot"
+repository = "https://github.com/pool-party/bubblifier-bot"
+documentation = "https://github.com/pool-party/bubblifier-bot#readme"
+readme = "../README.md"
+keywords = ["telegram"]
+license-file = "../LICENSE.md"
+authors = ["Pool Party Corp"]
+
+[dependencies]
+# logging
+log = "0.4"
+pretty_env_logger = "0.4"
+
+# telegram
+teloxide = "0.3.3"
+tokio = { version = "0.2", features = ["full"] }
+
+# database
+diesel = { version = "1.4.5", features = ["postgres"] }
+dotenv = "0.15.0"
