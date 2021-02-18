@@ -3,4 +3,4 @@ node_modules
 dist
 coverage
 
-.eslintrc.js
+src/react-app-env.d.ts
