@@ -77,7 +77,9 @@ async fn create_sticker_pack(
         .await
         .unwrap()?;
 
-    update_sticker_pack_cover(cs, &sticker_pack_name, sender_id).await;
+    if let Err(error) = update_sticker_pack_cover(cs, &sticker_pack_name, sender_id).await {
+        log::error!("Failed to update sticker pack cover: {}", error);
+    }
 
     diesel::insert_into(stickerpack)
         .values(&NewStickerPack {
@@ -99,49 +101,28 @@ async fn update_sticker_pack_cover(
     cs: &UpdateWithCx<Message>,
     sticker_pack_name: &str,
     sender_id: i32,
-) {
+) -> anyhow::Result<()> {
     log::info!("Updating sticker pack cover ({} of {})", sticker_pack_name, sender_id);
 
-    if let Ok(got_chat) = cs.bot.get_chat(cs.chat_id()).send().await {
-        if let Some(chat_photo) = got_chat.photo {
-            if let Ok(File { file_path, .. }) =
-                cs.bot.get_file(chat_photo.small_file_id).send().await
-            {
-                // TODO adequate temporary file
+    if let Some(chat_photo) = cs.bot.get_chat(cs.chat_id()).send().await?.photo {
+        let File { file_path, .. } = cs.bot.get_file(chat_photo.small_file_id).send().await?;
 
-                let tmp_file_path: std::path::PathBuf = ["/", "tmp", "tmp.jpg"].iter().collect();
-                if let Ok(mut file) = tokio::fs::File::create(tmp_file_path.clone()).await {
-                    if cs.bot.download_file(&file_path, &mut file).await.is_ok() {
-                        if let Ok(img) = image::open(tmp_file_path.clone()) {
-                            if img
-                                .resize(100, 100, image::imageops::FilterType::Triangle)
-                                .save(tmp_file_path.clone())
-                                .is_ok()
-                            {
-                                // TODO FIXME somehow it doesn't work
-                                cs.bot
-                                    .set_sticker_set_thumb(sticker_pack_name, sender_id)
-                                    .thumb(InputFile::File(tmp_file_path))
-                                    .send()
-                                    .await
-                                    .ok();
-                            } else {
-                                log::error!("Failed to save resized sticker pack cover");
-                            }
-                        }
-                    } else {
-                        log::error!("Failed to download chat cover");
-                    }
-                } else {
-                    log::error!("Failed to create temporary file");
-                }
-            } else {
-                log::error!("Failed to get file path");
-            }
-        } else {
-            log::error!("Failed to obtain chat cover file info");
-        }
-    } else {
-        log::error!("Failed to obtain chat info");
+        // TODO adequate temporary file
+        let tmp_file_path: std::path::PathBuf = ["/", "tmp", "tmp.jpg"].iter().collect();
+        let mut file = tokio::fs::File::create(tmp_file_path.clone()).await?;
+
+        cs.bot.download_file(&file_path, &mut file).await?;
+
+        image::open(tmp_file_path.clone())?
+            .resize(100, 100, image::imageops::FilterType::Triangle)
+            .save(tmp_file_path.clone())?;
+
+        cs.bot
+            .set_sticker_set_thumb(sticker_pack_name, sender_id)
+            .thumb(InputFile::File(tmp_file_path))
+            .send()
+            .await?;
     }
+
+    Ok(())
 }
