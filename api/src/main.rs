@@ -1,16 +1,24 @@
 #[macro_use]
 extern crate diesel;
-extern crate dotenv;
 
-use diesel::{pg::PgConnection, prelude::*};
-use teloxide::{
-    prelude::*, requests::RequestWithFile, types::InputFile::FileId, utils::command::BotCommand,
-};
+// use diesel::{pg::PgConnection, prelude::*};
+// use std::sync::Arc;
+use teloxide::{prelude::*, utils::command::BotCommand};
 
+pub mod bubble;
 pub mod models;
 pub mod schema;
+pub mod settings;
 
-use self::models::StickerPack;
+// use self::settings::Settings;
+
+// fn establish_connection() -> Arc<PgConnection> {
+//     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+//     Arc::new(
+//         PgConnection::establish(&database_url)
+//             .expect(&format!("Error connecting to {}", database_url)),
+//     )
+// }
 
 #[derive(BotCommand)]
 #[command(rename = "lowercase", description = "Available commands")]
@@ -22,63 +30,38 @@ enum Command {
 }
 
 async fn answer(cs: UpdateWithCx<Message>, command: Command) -> ResponseResult<()> {
-    // TODO logging?
+    log::info!("Processing {:?} from {}", cs.update.text(), cs.chat_id());
 
     match command {
         Command::Help => cs.answer(Command::descriptions()).send().await?,
-        Command::Bubble => bubble(cs).await?,
+        Command::Bubble => bubble::bubble(cs).await?,
     };
 
     Ok(())
 }
 
-async fn bubble(cs: UpdateWithCx<Message>) -> Result<Message, RequestError> {
-    use self::schema::stickerpack::dsl::*;
-
-    let connection = establish_connection();
-    let result = stickerpack
-        .filter(chat_id.eq(cs.chat_id()))
-        .load::<StickerPack>(&connection)
-        .expect("Error loading sticker pack");
-
-    assert!(result.len() < 2);
-
-    let pack;
-
-    if !result.is_empty() {
-        pack = &result[0];
-    } else {
-        // TODO creating
-        pack = &result[0];
-    }
-
-    cs.answer_sticker(FileId(
-        (&cs.bot.get_sticker_set(pack.name.clone()).send().await?.stickers[0]).file_id.clone(),
-    ))
-    .send()
-    .await
-    .expect("No file manipulations expected")
-}
-
-fn establish_connection() -> PgConnection {
+async fn run() {
     dotenv::dotenv().ok();
+    // let settings = match Settings::new() {
+    //     Ok(s) => s,
+    //     Err(r) => panic!(r),
+    // };
 
-    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    PgConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
+    teloxide::enable_logging_with_filter!(log::LevelFilter::Debug);
+    log::info!("Starting bot...");
+
+    // TODO what the fuck, why can't I move it into config?
+    let bot = Bot::from_env();
+
+    // TODO what the fuck, why can't I move it into config?
+    let bot_name = "PullPartyTestBot";
+    // let connection = establish_connection();
+
+    teloxide::commands_repl(bot, bot_name, answer).await;
+    // teloxide::commands_repl(bot, bot_name, |cs, command| answer(cs, command, connection)).await;
 }
 
 #[tokio::main]
 async fn main() {
     run().await;
-}
-
-async fn run() {
-    teloxide::enable_logging_with_filter!(log::LevelFilter::Debug);
-    log::info!("Starting bot...");
-
-    let bot = Bot::from_env();
-    // TODO config somehow
-    let bot_name = "PullPartyTestBot";
-
-    teloxide::commands_repl(bot, &bot_name, answer).await;
 }

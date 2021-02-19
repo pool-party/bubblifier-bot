@@ -12,10 +12,6 @@ license-file = "../LICENSE.md"
 authors = ["Pool Party Corp"]
 
 [dependencies]
-# logging
-log = "0.4"
-pretty_env_logger = "0.4"
-
 # telegram
 teloxide = "0.3.3"
 tokio = { version = "0.2", features = ["full"] }
@@ -23,3 +19,12 @@ tokio = { version = "0.2", features = ["full"] }
 # database
 diesel = { version = "1.4.5", features = ["postgres"] }
 dotenv = "0.15.0"
+
+# other
+image = "0.23.13"
+
+log = "0.4"
+pretty_env_logger = "0.4"
+
+config = "0.10"
+serde = { version = "1.0.123", features = ["derive"] }
