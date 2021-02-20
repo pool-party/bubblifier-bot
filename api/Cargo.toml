@@ -23,10 +23,11 @@ dotenv = "0.15.0"
 # other
 anyhow = "1.0"
 
-image = "0.23.13"
-
 log = "0.4"
 pretty_env_logger = "0.4"
 
 config = "0.10"
 serde = { version = "1.0.123", features = ["derive"] }
+
+image = "0.23.13"
+thirtyfour = "0.22.3"

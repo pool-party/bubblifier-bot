@@ -2,7 +2,7 @@
 extern crate diesel;
 
 // use diesel::{pg::PgConnection, prelude::*};
-// use std::sync::Arc;
+// use std::sync::{Arc, Mutex};
 use teloxide::{prelude::*, utils::command::BotCommand};
 
 pub mod bubble;
@@ -12,12 +12,12 @@ pub mod settings;
 
 // use self::settings::Settings;
 
-// fn establish_connection() -> Arc<PgConnection> {
+// fn establish_connection() -> Arc<Mutex<PgConnection>> {
 //     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-//     Arc::new(
+//     Arc::new(Mutex::new(
 //         PgConnection::establish(&database_url)
 //             .expect(&format!("Error connecting to {}", database_url)),
-//     )
+//     ))
 // }
 
 #[derive(BotCommand)]
@@ -29,12 +29,16 @@ enum Command {
     Bubble,
 }
 
-async fn answer(cs: UpdateWithCx<Message>, command: Command) -> ResponseResult<()> {
+async fn answer(cs: UpdateWithCx<Message>, command: Command) -> anyhow::Result<()> {
     log::info!("Processing {:?} from {}", cs.update.text(), cs.chat_id());
 
     match command {
-        Command::Help => cs.answer(Command::descriptions()).send().await?,
-        Command::Bubble => bubble::bubble(cs).await?,
+        Command::Help => {
+            cs.answer(Command::descriptions()).send().await?;
+        }
+        Command::Bubble => {
+            bubble::bubble(cs).await?;
+        }
     };
 
     Ok(())
@@ -43,7 +47,7 @@ async fn answer(cs: UpdateWithCx<Message>, command: Command) -> ResponseResult<(
 async fn run() {
     dotenv::dotenv().ok();
     // let settings = match Settings::new() {
-    //     Ok(s) => s,
+    //     Ok(s) => Arc::new(tokio::sync::Mutex::new(s)),
     //     Err(r) => panic!(r),
     // };
 
@@ -51,6 +55,7 @@ async fn run() {
     log::info!("Starting bot...");
 
     // TODO what the fuck, why can't I move it into config?
+    // let bot = BotBuilder::new().token(settings.teloxide.token).build();
     let bot = Bot::from_env();
 
     // TODO what the fuck, why can't I move it into config?
