@@ -10,20 +10,20 @@ fn establish_connection() -> PgConnection {
     PgConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
 }
 
-pub async fn bubble(cs: UpdateWithCx<Message>) -> Result<()> {
+pub async fn bubble(context: UpdateWithCx<Message>) -> Result<()> {
     use crate::schema::stickerpack::dsl::*;
 
-    let text = cs
+    let text = context
         .update
         .reply_to_message()
-        .and_then(|m| m.text())
-        .ok_or(anyhow!("Please reply to a bubble message"))?;
+        .ok_or(anyhow!("Please reply to a bubble message"))?
+        .text();
 
     // TODO establish a connection only once
     let connection = establish_connection();
 
     let data_base_pack = stickerpack
-        .filter(chat_id.eq(cs.chat_id()))
+        .filter(chat_id.eq(context.chat_id()))
         .load::<StickerPack>(&connection)
         .expect("Error loading sticker pack")
         .into_iter()
@@ -31,19 +31,20 @@ pub async fn bubble(cs: UpdateWithCx<Message>) -> Result<()> {
 
     let pack = match data_base_pack {
         Some(p) => p,
-        None => create_sticker_pack(&cs, connection).await?,
+        None => create_sticker_pack(&context, connection).await?,
     };
 
+    // TODO TEMP: answer w/ a made one
     let first_sticker = InputFile::FileId(
-        (&cs.bot.get_sticker_set(pack.name.clone()).send().await?.stickers[0]).file_id.clone(),
+        (&context.bot.get_sticker_set(pack.name.clone()).send().await?.stickers[0]).file_id.clone(),
     );
 
-    // TODO answer w/ a made one
-    cs.answer_sticker(first_sticker).send().await.expect("No file manipulations expected")?;
+    // TODO TEMP: answer w/ a made one
+    context.answer_sticker(first_sticker).send().await.expect("No file manipulations expected")?;
 
     // let bubble = render_bubble(&text).await?;
 
-    // match cs
+    // match context
     //     .bot
     //     .add_sticker_to_set(
     //         pack.user_id as i32,
@@ -55,9 +56,9 @@ pub async fn bubble(cs: UpdateWithCx<Message>) -> Result<()> {
     //     .await
     // {
     //     Ok(_) => {
-    //         // TODO answer w/ a made one
-    //         cs.answer_sticker(InputFile::FileId(
-    //             (&cs.bot.get_sticker_set(pack.name.clone()).send().await?.stickers[0])
+    //         // TODO TEMP: answer w/ a made one
+    //         context.answer_sticker(InputFile::FileId(
+    //             (&context.bot.get_sticker_set(pack.name.clone()).send().await?.stickers[0])
     //                 .file_id
     //                 .clone(),
     //         ))
@@ -66,7 +67,7 @@ pub async fn bubble(cs: UpdateWithCx<Message>) -> Result<()> {
     //         .expect("No file manipulations expected");
     //     }
     //     Err(err) => {
-    //         cs.answer("Failed to add a sticker to your sticker pack").send().await?;
+    //         context.answer("Failed to add a sticker to your sticker pack").send().await?;
     //     }
     // }
 
@@ -74,18 +75,18 @@ pub async fn bubble(cs: UpdateWithCx<Message>) -> Result<()> {
 }
 
 async fn create_sticker_pack(
-    cs: &UpdateWithCx<Message>,
+    context: &UpdateWithCx<Message>,
     connection: PgConnection,
-) -> Result<StickerPack, RequestError> {
+) -> Result<StickerPack> {
     // TODO config
     let bot_name = "PullPartyTestBot";
 
-    let message_chat_id = cs.chat_id();
+    let message_chat_id = context.chat_id();
 
-    let sender_id = cs.update.from().map(|x| x.id).expect("User is not specified");
+    let sender_id = context.update.from().map(|x| x.id).expect("User is not specified");
     let sticker_pack_name =
         format!("{}_by_{}", message_chat_id.to_string().replace("-", "minus"), bot_name);
-    let chat = &cs.update.chat;
+    let chat = &context.update.chat;
     let chat_name = match chat.kind.to_owned() {
         ChatKind::Public(public_chat) => public_chat.title,
         ChatKind::Private(private_chat) => private_chat.username,
@@ -106,7 +107,8 @@ async fn create_sticker_pack(
         sender_id
     );
 
-    cs.bot
+    context
+        .bot
         .create_new_sticker_set(
             sender_id,
             sticker_pack_name.clone(),
@@ -118,7 +120,7 @@ async fn create_sticker_pack(
         .await
         .unwrap()?;
 
-    if let Err(error) = update_sticker_pack_cover(cs, &sticker_pack_name, sender_id).await {
+    if let Err(error) = update_sticker_pack_cover(context, &sticker_pack_name, sender_id).await {
         log::error!("Failed to update sticker pack cover: {}", error);
     }
 
@@ -140,26 +142,27 @@ async fn create_sticker_pack(
 
 // FIXME this doesn't work wtf
 async fn update_sticker_pack_cover(
-    cs: &UpdateWithCx<Message>,
+    context: &UpdateWithCx<Message>,
     sticker_pack_name: &str,
     sender_id: i32,
 ) -> Result<()> {
     log::info!("Updating sticker pack cover ({} of {})", sticker_pack_name, sender_id);
 
-    if let Some(chat_photo) = cs.bot.get_chat(cs.chat_id()).send().await?.photo {
-        let File { file_path, .. } = cs.bot.get_file(chat_photo.small_file_id).send().await?;
+    if let Some(chat_photo) = context.bot.get_chat(context.chat_id()).send().await?.photo {
+        let File { file_path, .. } = context.bot.get_file(chat_photo.small_file_id).send().await?;
 
         // TODO adequate temporary file
         let tmp_file_path: std::path::PathBuf = ["/", "tmp", "tmp.jpg"].iter().collect();
         let mut file = tokio::fs::File::create(tmp_file_path.clone()).await?;
 
-        cs.bot.download_file(&file_path, &mut file).await?;
+        context.bot.download_file(&file_path, &mut file).await?;
 
         image::open(tmp_file_path.clone())?
             .resize(100, 100, image::imageops::FilterType::Triangle)
             .save(tmp_file_path.clone())?;
 
-        cs.bot
+        context
+            .bot
             .set_sticker_set_thumb(sticker_pack_name, sender_id)
             .thumb(InputFile::File(tmp_file_path))
             .send()
@@ -169,7 +172,7 @@ async fn update_sticker_pack_cover(
     Ok(())
 }
 
-async fn render_bubble(message: &str) -> anyhow::Result<InputFile> {
+async fn render_bubble(message: &str) -> Result<InputFile> {
     let caps = DesiredCapabilities::chrome();
     // TODO config
     // TODO not to forget to launch this fucking server

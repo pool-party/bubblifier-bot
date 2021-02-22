@@ -29,15 +29,15 @@ enum Command {
     Bubble,
 }
 
-async fn answer(cs: UpdateWithCx<Message>, command: Command) -> anyhow::Result<()> {
-    log::info!("Processing {:?} from {}", cs.update.text(), cs.chat_id());
+async fn answer(context: UpdateWithCx<Message>, command: Command) -> anyhow::Result<()> {
+    log::info!("Processing {:?} from {}", context.update.text(), context.chat_id());
 
     match command {
         Command::Help => {
-            cs.answer(Command::descriptions()).send().await?;
+            context.answer(Command::descriptions()).send().await?;
         }
         Command::Bubble => {
-            bubble::bubble(cs).await?;
+            bubble::bubble(context).await?;
         }
     };
 
@@ -63,7 +63,7 @@ async fn run() {
     // let connection = establish_connection();
 
     teloxide::commands_repl(bot, bot_name, answer).await;
-    // teloxide::commands_repl(bot, bot_name, |cs, command| answer(cs, command, connection)).await;
+    // teloxide::commands_repl(bot, bot_name, |context, command| answer(context, command, connection)).await;
 }
 
 #[tokio::main]
