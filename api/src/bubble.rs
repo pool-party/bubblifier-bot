@@ -1,17 +1,19 @@
 use crate::models::*;
 use crate::schema::stickerpack::dsl::*;
+use crate::settings::Settings;
 use anyhow::*;
 use diesel::{pg::PgConnection, prelude::*};
 use std::env::temp_dir;
+use std::path::PathBuf;
+use std::sync::{Arc, Mutex};
 use teloxide::{prelude::*, requests::RequestWithFile, types::*};
 use thirtyfour::prelude::*;
 
-fn establish_connection() -> PgConnection {
-    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    PgConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
-}
-
-pub async fn bubble(context: UpdateWithCx<Message>) -> Result<()> {
+pub async fn bubble(
+    context: UpdateWithCx<Message>,
+    settings: Arc<Settings>,
+    connection: Arc<Mutex<PgConnection>>,
+) -> Result<()> {
     use crate::schema::stickerpack::dsl::*;
 
     let text = context
@@ -20,20 +22,17 @@ pub async fn bubble(context: UpdateWithCx<Message>) -> Result<()> {
         .ok_or(anyhow!("Please reply to a bubble message"))?
         .text();
 
-    // TODO establish a connection only once
-    let connection = establish_connection();
-
     // TODO user can delete stickerpack, what to do then?
     let data_base_pack = stickerpack
         .filter(chat_id.eq(context.chat_id()))
-        .load::<StickerPack>(&connection)
+        .load::<StickerPack>(&*connection.lock().unwrap())
         .expect("Error loading sticker pack")
         .into_iter()
         .next();
 
     let pack = match data_base_pack {
         Some(p) => p,
-        None => create_sticker_pack(&context, connection).await?,
+        None => create_sticker_pack(&context, settings, connection).await?,
     };
 
     // TODO TEMP: answer w/ a made one
@@ -78,16 +77,17 @@ pub async fn bubble(context: UpdateWithCx<Message>) -> Result<()> {
 
 async fn create_sticker_pack(
     context: &UpdateWithCx<Message>,
-    connection: PgConnection,
+    settings: Arc<Settings>,
+    connection: Arc<Mutex<PgConnection>>,
 ) -> Result<StickerPack> {
-    // TODO config
-    let bot_name = "PullPartyTestBot";
-
     let message_chat_id = context.chat_id();
 
     let sender_id = context.update.from().map(|x| x.id).expect("User is not specified");
-    let sticker_pack_name =
-        format!("{}_by_{}", message_chat_id.to_string().replace("-", "minus"), bot_name);
+    let sticker_pack_name = format!(
+        "{}_by_{}",
+        message_chat_id.to_string().replace("-", "minus"),
+        &settings.teloxide.name
+    );
     let chat = &context.update.chat;
     let chat_name = match chat.kind.to_owned() {
         ChatKind::Public(public_chat) => public_chat.title,
@@ -98,9 +98,6 @@ async fn create_sticker_pack(
     .unwrap_or(String::from(""));
 
     let sticker_pack_title = chat_name + "Bubbles";
-
-    // TODO config
-    let logo_path: std::path::PathBuf = ["..", "assets", "title-512.png"].iter().collect();
 
     log::info!(
         "Creating sticker pack \"{}\" (https://t.me/addstickers/{}) with {} owner",
@@ -115,7 +112,7 @@ async fn create_sticker_pack(
             sender_id,
             sticker_pack_name.clone(),
             sticker_pack_title,
-            StickerType::Png(InputFile::File(logo_path)),
+            StickerType::Png(InputFile::File(PathBuf::from(&settings.pack.logo))),
             "💭",
         )
         .send()
@@ -132,7 +129,7 @@ async fn create_sticker_pack(
             user_id: &(sender_id as i64),
             name: &sticker_pack_name,
         })
-        .get_result::<StickerPack>(&connection)
+        .get_result::<StickerPack>(&*connection.lock().unwrap())
         .expect("Error saving post");
 
     Ok(StickerPack {
