@@ -30,4 +30,5 @@ config = "0.10"
 serde = { version = "1.0.123", features = ["derive"] }
 
 image = "0.23.13"
+uuid = { version = "0.8.1", features = ["serde", "v4"] }
 thirtyfour = "0.22.3"

@@ -151,8 +151,10 @@ async fn update_sticker_pack_cover(
     if let Some(chat_photo) = context.bot.get_chat(context.chat_id()).send().await?.photo {
         let File { file_path, .. } = context.bot.get_file(chat_photo.small_file_id).send().await?;
 
-        // TODO adequate temporary file
-        let tmp_file_path: std::path::PathBuf = ["/", "tmp", "tmp.jpg"].iter().collect();
+        let mut tmp_file_path = std::env::temp_dir();
+        tmp_file_path.push(format!("{}.jpg", uuid::Uuid::new_v4()));
+        log::info!("Creating temporary file: {:?}", tmp_file_path.to_str());
+
         let mut file = tokio::fs::File::create(tmp_file_path.clone()).await?;
 
         context.bot.download_file(&file_path, &mut file).await?;
@@ -167,6 +169,14 @@ async fn update_sticker_pack_cover(
             .thumb(InputFile::File(tmp_file_path))
             .send()
             .await?;
+
+        log::info!(
+            "Sticker pack cover updated successfully ({} of {})",
+            sticker_pack_name,
+            sender_id
+        );
+    } else {
+        log::info!("No chat photo found in {}", sender_id);
     }
 
     Ok(())
