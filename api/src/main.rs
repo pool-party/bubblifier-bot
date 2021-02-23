@@ -42,7 +42,10 @@ async fn answer(
             context.answer(Command::descriptions()).send().await?;
         }
         Command::Bubble => {
-            bubble::bubble(context, settings, connection).await?;
+            if let Err(err) = bubble::bubble(&context, settings, connection).await {
+                log::error!("{}", err);
+                context.answer(format!("Error: {}", err)).send().await?;
+            }
         }
     };
 

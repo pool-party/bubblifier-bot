@@ -10,7 +10,7 @@ use teloxide::{prelude::*, requests::RequestWithFile, types::*};
 use thirtyfour::prelude::*;
 
 pub async fn bubble(
-    context: UpdateWithCx<Message>,
+    context: &UpdateWithCx<Message>,
     settings: Arc<Settings>,
     connection: Arc<Mutex<PgConnection>>,
 ) -> Result<()> {
@@ -20,7 +20,7 @@ pub async fn bubble(
         .update
         .reply_to_message()
         .and_then(|m| m.text())
-        .ok_or(anyhow!("Please reply to a bubble message"))?;
+        .ok_or(anyhow!("Please reply to a bubble text message"))?;
 
     // TODO user can delete stickerpack, what to do then?
     let data_base_pack = stickerpack
@@ -137,7 +137,6 @@ async fn create_sticker_pack(
     })
 }
 
-// FIXME this doesn't work wtf
 async fn update_sticker_pack_cover(
     context: &UpdateWithCx<Message>,
     sticker_pack_name: &str,
@@ -153,26 +152,34 @@ async fn update_sticker_pack_cover(
         download_path.push(format!("{}.jpg", random_id));
         log::info!("Creating temporary file: {:?}", download_path.to_str());
 
-        let mut file = tokio::fs::File::create(download_path.clone()).await?;
-
-        context.bot.download_file(&file_path, &mut file).await?;
+        let file = tokio::fs::File::create(download_path.clone()).await?;
 
         let mut save_path = temp_dir();
         save_path.push(format!("{}.png", random_id));
-        image::open(download_path.clone())?
-            .resize(100, 100, image::imageops::FilterType::Triangle)
-            .save(save_path.clone())?;
 
-        context
-            .bot
-            .set_sticker_set_thumb(sticker_pack_name, sender_id)
-            .thumb(InputFile::File(save_path.clone()))
-            .send()
-            .await?;
+        let file_manipulations =
+            |bot: Bot, mut file, download_path: PathBuf, save_path: PathBuf| async move {
+                bot.download_file(&file_path, &mut file).await?;
 
-        // TODO must be in finally of a try-catch
-        tokio::fs::remove_file(download_path).await?;
-        tokio::fs::remove_file(save_path).await?;
+                image::open(download_path.clone())?
+                    .resize(100, 100, image::imageops::FilterType::Triangle)
+                    .save(save_path.clone())?;
+
+                bot.set_sticker_set_thumb(sticker_pack_name, sender_id)
+                    .thumb(InputFile::File(save_path.clone()))
+                    .send()
+                    .await??;
+
+                Ok::<(), anyhow::Error>(())
+            };
+
+        if let Err(_err) =
+            file_manipulations(context.bot.clone(), file, download_path.clone(), save_path.clone())
+                .await
+        {
+            tokio::fs::remove_file(download_path).await.ok();
+            tokio::fs::remove_file(save_path).await.ok();
+        }
 
         log::info!(
             "Sticker pack cover updated successfully ({} of {})",

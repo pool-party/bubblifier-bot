@@ -13,7 +13,8 @@ authors = ["Pool Party Corp"]
 
 [dependencies]
 # telegram
-teloxide = "0.3.4"
+# TODO switch to new teloxide version as it arrives
+teloxide = { git = "https://github.com/QuentinI/teloxide", branch = "dev", features = ["macros"] }
 tokio = { version = "0.2", features = ["full"] }
 
 # database
