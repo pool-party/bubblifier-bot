@@ -18,10 +18,17 @@ pub struct Pack {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct Selenium {
+    pub server: String,
+    pub url: String,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct Settings {
     pub database: Database,
     pub teloxide: Teloxide,
     pub pack: Pack,
+    pub selenium: Selenium,
 }
 
 impl Settings {
@@ -31,6 +38,8 @@ impl Settings {
         s.merge(File::with_name("config/default"))?;
         s.merge(Environment::with_prefix("DATABASE_URL"))?;
         s.merge(Environment::with_prefix("TELOXIDE_TOKEN"))?;
+        s.merge(Environment::with_prefix("SELENIUM_SERVER"))?;
+        s.merge(Environment::with_prefix("SELENIUM_URL"))?;
         s.merge(File::with_name("config/develop").required(false))?;
 
         s.try_into()

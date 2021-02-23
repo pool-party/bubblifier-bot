@@ -19,8 +19,8 @@ pub async fn bubble(
     let text = context
         .update
         .reply_to_message()
-        .ok_or(anyhow!("Please reply to a bubble message"))?
-        .text();
+        .and_then(|m| m.text())
+        .ok_or(anyhow!("Please reply to a bubble message"))?;
 
     // TODO user can delete stickerpack, what to do then?
     let data_base_pack = stickerpack
@@ -32,18 +32,16 @@ pub async fn bubble(
 
     let pack = match data_base_pack {
         Some(p) => p,
-        None => create_sticker_pack(&context, settings, connection).await?,
+        None => create_sticker_pack(&context, settings.clone(), connection).await?,
     };
 
     // TODO TEMP: answer w/ a made one
     let first_sticker = InputFile::FileId(
         (&context.bot.get_sticker_set(pack.name.clone()).send().await?.stickers[0]).file_id.clone(),
     );
-
-    // TODO TEMP: answer w/ a made one
     context.answer_sticker(first_sticker).send().await.expect("No file manipulations expected")?;
 
-    // let bubble = render_bubble(&text).await?;
+    // let bubble = render_bubble(&text, settings).await?;
 
     // match context
     //     .bot
@@ -188,15 +186,11 @@ async fn update_sticker_pack_cover(
     Ok(())
 }
 
-async fn render_bubble(message: &str) -> Result<InputFile> {
+async fn render_bubble(message: &str, settings: Arc<Settings>) -> Result<InputFile> {
     let caps = DesiredCapabilities::chrome();
-    // TODO config
-    // TODO not to forget to launch this fucking server
-    let driver = WebDriver::new("http://localhost:4444", &caps).await?;
+    let driver = WebDriver::new(&settings.selenium.server, &caps).await?;
 
-    // TODO config
-    // TODO proper url w/ message
-    driver.get("https://www.rust-lang.org").await?;
+    driver.get(&settings.selenium.url).await?;
     let screenshot =
         driver.find_element(By::ClassName("message")).await?.screenshot_as_png().await?;
     Ok(InputFile::memory("bubble.png", screenshot))
