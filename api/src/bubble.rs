@@ -2,6 +2,7 @@ use crate::models::*;
 use crate::schema::stickerpack::dsl::*;
 use anyhow::*;
 use diesel::{pg::PgConnection, prelude::*};
+use std::env::temp_dir;
 use teloxide::{prelude::*, requests::RequestWithFile, types::*};
 use thirtyfour::prelude::*;
 
@@ -22,6 +23,7 @@ pub async fn bubble(context: UpdateWithCx<Message>) -> Result<()> {
     // TODO establish a connection only once
     let connection = establish_connection();
 
+    // TODO user can delete stickerpack, what to do then?
     let data_base_pack = stickerpack
         .filter(chat_id.eq(context.chat_id()))
         .load::<StickerPack>(&connection)
@@ -151,24 +153,31 @@ async fn update_sticker_pack_cover(
     if let Some(chat_photo) = context.bot.get_chat(context.chat_id()).send().await?.photo {
         let File { file_path, .. } = context.bot.get_file(chat_photo.small_file_id).send().await?;
 
-        let mut tmp_file_path = std::env::temp_dir();
-        tmp_file_path.push(format!("{}.jpg", uuid::Uuid::new_v4()));
-        log::info!("Creating temporary file: {:?}", tmp_file_path.to_str());
+        let mut download_path = temp_dir();
+        let random_id = uuid::Uuid::new_v4();
+        download_path.push(format!("{}.jpg", random_id));
+        log::info!("Creating temporary file: {:?}", download_path.to_str());
 
-        let mut file = tokio::fs::File::create(tmp_file_path.clone()).await?;
+        let mut file = tokio::fs::File::create(download_path.clone()).await?;
 
         context.bot.download_file(&file_path, &mut file).await?;
 
-        image::open(tmp_file_path.clone())?
+        let mut save_path = temp_dir();
+        save_path.push(format!("{}.png", random_id));
+        image::open(download_path.clone())?
             .resize(100, 100, image::imageops::FilterType::Triangle)
-            .save(tmp_file_path.clone())?;
+            .save(save_path.clone())?;
 
         context
             .bot
             .set_sticker_set_thumb(sticker_pack_name, sender_id)
-            .thumb(InputFile::File(tmp_file_path))
+            .thumb(InputFile::File(save_path.clone()))
             .send()
             .await?;
+
+        // TODO must be in finally of a try-catch
+        tokio::fs::remove_file(download_path).await?;
+        tokio::fs::remove_file(save_path).await?;
 
         log::info!(
             "Sticker pack cover updated successfully ({} of {})",

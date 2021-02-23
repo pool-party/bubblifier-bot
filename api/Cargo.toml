@@ -13,7 +13,7 @@ authors = ["Pool Party Corp"]
 
 [dependencies]
 # telegram
-teloxide = "0.3.3"
+teloxide = "0.3.4"
 tokio = { version = "0.2", features = ["full"] }
 
 # database
