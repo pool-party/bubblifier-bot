@@ -29,3 +29,19 @@ following commands:
 - [TypeScript](http://typescriptlang.org/) language
 
 - [React](https://reactjs.org/) - a JavaScript library for building user interfaces
+
+### Telegram bot part ([api/](api/))
+
+- [Rust](https://www.rust-lang.org/) programming language
+
+- [Teloxide](https://github.com/teloxide/teloxide/) - a full-featured framework that empowers you to easily build
+  [Telegram bots](https://telegram.org/blog/bot-revolution) using the
+  [`async`/`await`](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html)
+  syntax in Rust
+
+- [Diesel](https://github.com/diesel-rs/diesel) - a safe, extensible ORM and Query Builder for Rust
+
+- [Image](https://github.com/image-rs/image) - encoding and decoding images in Rust
+
+- [Thirtyfour](https://github.com/stevepryde/thirtyfour) - [Selenium](https://www.selenium.dev/) WebDriver client
+  for Rust
