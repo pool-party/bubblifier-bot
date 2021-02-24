@@ -1,12 +1,12 @@
 import React from 'react';
 import './index.css';
-import Messages from '../Messages';
+import Message from '../Message';
 
 function Section() {
   return (
     <section className="section">
       <div className="section__element">
-        <Messages />
+        <Message />
       </div>
     </section>
   );
