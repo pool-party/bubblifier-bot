@@ -1,0 +1,18 @@
+.section {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-image: url("https://raw.githubusercontent.com/telegramdesktop/tdesktop/dev/Telegram/Resources/art/bg_initial.jpg");
+  background-position-y: -54px;
+  background-attachment: fixed;
+}
+
+.section__element {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: flex-end;
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-bottom: 6px;
+}
