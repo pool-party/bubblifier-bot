@@ -9,6 +9,8 @@
 </div>
 <p align="center">© 2020 Pool Party Corp. All rights reserved.</p>
 
+[comment]: <> (TODO: use preview from botostore site)
+
 ## Usage guide
 
 Add [`@BubblifierBot`](https://t.me/BubblifierBot) to the chat to be able to create custom bubble sticker packs using
@@ -20,7 +22,13 @@ following commands:
 
 ## Structure
 
-![Project Structure](assets/project-schema.jpg)
+The project structure consisting of the main three component is as follows:
+
+![Project Structure](assets/readme/project-schema.jpg)
+
+The communication for request processing:
+
+![Microservices communication Schema](assets/readme/communication-schema.svg)
 
 ## Tools and Libraries
 
