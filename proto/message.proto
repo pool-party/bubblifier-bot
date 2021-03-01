@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+message BubbleRequestMessage {
+  enum MessageType {
+    TEXT = 0;
+    IMAGE = 1;
+  }
+  MessageType message_type = 1;
+  string content = 2;
+  int32 author_id = 3;
+  string author_name = 4;
+  string author_pic = 5;
+}

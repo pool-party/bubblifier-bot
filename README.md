@@ -32,6 +32,30 @@ The communication for request processing:
 
 ## Tools and Libraries
 
+### Proto ([proto/](proto/))
+
+- [Protocol Buffers](https://developers.google.com/protocol-buffers) - language-neutral, platform-neutral
+  extensible mechanism for serializing structured data
+
+- [Rust protobuf](https://github.com/stepancheg/rust-protobuf) - rust implementation of Google protocol buffers
+
+> Language structure exporting files generation:
+>
+> - Have `protoc` package installed
+>
+> - Rust:
+>
+>   ```shell
+>   cargo install protobuf-codegen
+>   protoc --rust_out api/src --plugin $HOME/.cargo/bin/protoc-gen-rust proto/*.proto
+>   ```
+>
+> - JavaScript:
+>
+>   ```shell
+>   protoc --proto_path=proto --js_out=import_style=commonjs,binary:client/src proto/*.proto
+>   ```
+
 ### Bubble rendering server ([client/](client/))
 
 - [TypeScript](http://typescriptlang.org/) language
