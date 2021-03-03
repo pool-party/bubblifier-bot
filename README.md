@@ -39,6 +39,8 @@ The communication for request processing:
 
 - [Rust protobuf](https://github.com/stepancheg/rust-protobuf) - rust implementation of Google protocol buffers
 
+- [TypeScript protobuf](https://github.com/stephenh/ts-proto) - an idiomatic protobuf generator for TypeScript
+
 > Language structure exporting files generation:
 >
 > - Have `protoc` package installed
