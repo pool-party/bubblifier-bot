@@ -1,13 +1,26 @@
-syntax = "proto3";
+syntax = "proto2";
 
-message BubbleRequestMessage {
-  enum MessageType {
-    TEXT = 0;
-    IMAGE = 1;
+message BubbleRequest {
+  message Message {
+    message TextMessage {
+      required string text = 1;
+    }
+
+    message PhotoMessage {
+      optional string photo_text = 1;
+      required string photo = 2;
+    }
+
+    oneof oneof_message {
+      TextMessage text_message = 1;
+      PhotoMessage photo_message = 2;
+    }
+
+    required bool author = 3;
+    required string author_name = 4;
+    optional string author_pic = 5;
+    optional string author_role = 6;
   }
-  MessageType message_type = 1;
-  string content = 2;
-  int32 author_id = 3;
-  string author_name = 4;
-  string author_pic = 5;
+
+  repeated Message message = 1;
 }

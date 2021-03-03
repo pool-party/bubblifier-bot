@@ -53,7 +53,9 @@ The communication for request processing:
 > - JavaScript:
 >
 >   ```shell
->   protoc --proto_path=proto --js_out=import_style=commonjs,binary:client/src proto/*.proto
+>   cd client
+>   npm install ts-proto
+>   protoc --proto_path ../proto --ts_proto_out src --plugin node_modules/.bin/protoc-gen-ts_proto ../proto/*.proto
 >   ```
 
 ### Bubble rendering server ([client/](client/))
