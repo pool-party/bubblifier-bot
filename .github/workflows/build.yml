@@ -1,6 +1,10 @@
 name: build
 
-on: [push]
+on:
+  push:
+    branches:
+      - masteer
+  pull_request:
 
 jobs:
   build:
@@ -14,7 +18,5 @@ jobs:
         with:
           toolchain: stable
       - name: setting up cargo
-        uses: actions-rs/cargo@v1
         working-directory: ./api
-        with:
-          command: build
+        run: cargo build
