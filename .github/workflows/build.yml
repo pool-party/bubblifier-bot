@@ -7,16 +7,24 @@ on:
   pull_request:
 
 jobs:
-  build:
+  api:
     name: build
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: rust toolchain
+      - name: caching
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/.git
+            api/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: set up rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - name: setting up cargo
+      - name: build
         working-directory: ./api
         run: cargo build
