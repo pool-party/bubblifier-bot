@@ -10,6 +10,7 @@ export interface BubbleRequest {
 export interface BubbleRequest_Message {
   textMessage: BubbleRequest_Message_TextMessage | undefined;
   photoMessage: BubbleRequest_Message_PhotoMessage | undefined;
+  time: string;
   author: boolean;
   authorName: string;
   authorPic: string;
@@ -88,6 +89,7 @@ export const BubbleRequest = {
 };
 
 const baseBubbleRequest_Message: object = {
+  time: '',
   author: false,
   authorName: '',
   authorPic: '',
@@ -108,17 +110,20 @@ export const BubbleRequest_Message = {
         writer.uint32(18).fork()
       ).ldelim();
     }
+    if (message.time !== '') {
+      writer.uint32(26).string(message.time);
+    }
     if (message.author === true) {
-      writer.uint32(24).bool(message.author);
+      writer.uint32(32).bool(message.author);
     }
     if (message.authorName !== '') {
-      writer.uint32(34).string(message.authorName);
+      writer.uint32(42).string(message.authorName);
     }
     if (message.authorPic !== '') {
-      writer.uint32(42).string(message.authorPic);
+      writer.uint32(50).string(message.authorPic);
     }
     if (message.authorRole !== '') {
-      writer.uint32(50).string(message.authorRole);
+      writer.uint32(58).string(message.authorRole);
     }
     return writer;
   },
@@ -137,15 +142,18 @@ export const BubbleRequest_Message = {
           message.photoMessage = BubbleRequest_Message_PhotoMessage.decode(reader, reader.uint32());
           break;
         case 3:
-          message.author = reader.bool();
+          message.time = reader.string();
           break;
         case 4:
-          message.authorName = reader.string();
+          message.author = reader.bool();
           break;
         case 5:
-          message.authorPic = reader.string();
+          message.authorName = reader.string();
           break;
         case 6:
+          message.authorPic = reader.string();
+          break;
+        case 7:
           message.authorRole = reader.string();
           break;
         default:
@@ -167,6 +175,11 @@ export const BubbleRequest_Message = {
       message.photoMessage = BubbleRequest_Message_PhotoMessage.fromJSON(object.photoMessage);
     } else {
       message.photoMessage = undefined;
+    }
+    if (object.time !== undefined && object.time !== null) {
+      message.time = String(object.time);
+    } else {
+      message.time = '';
     }
     if (object.author !== undefined && object.author !== null) {
       message.author = Boolean(object.author);
@@ -201,6 +214,7 @@ export const BubbleRequest_Message = {
       (obj.photoMessage = message.photoMessage
         ? BubbleRequest_Message_PhotoMessage.toJSON(message.photoMessage)
         : undefined);
+    message.time !== undefined && (obj.time = message.time);
     message.author !== undefined && (obj.author = message.author);
     message.authorName !== undefined && (obj.authorName = message.authorName);
     message.authorPic !== undefined && (obj.authorPic = message.authorPic);
@@ -219,6 +233,11 @@ export const BubbleRequest_Message = {
       message.photoMessage = BubbleRequest_Message_PhotoMessage.fromPartial(object.photoMessage);
     } else {
       message.photoMessage = undefined;
+    }
+    if (object.time !== undefined && object.time !== null) {
+      message.time = object.time;
+    } else {
+      message.time = '';
     }
     if (object.author !== undefined && object.author !== null) {
       message.author = object.author;

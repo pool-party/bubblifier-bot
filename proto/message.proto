@@ -16,10 +16,11 @@ message BubbleRequest {
       PhotoMessage photo_message = 2;
     }
 
-    required bool author = 3;
-    required string author_name = 4;
-    optional string author_pic = 5;
-    optional string author_role = 6;
+    required string time = 3;
+    required bool author = 4;
+    required string author_name = 5;
+    optional string author_pic = 6;
+    optional string author_role = 7;
   }
 
   repeated Message message = 1;

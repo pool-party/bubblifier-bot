@@ -192,6 +192,7 @@ impl ::protobuf::reflect::ProtobufValue for BubbleRequest {
 #[derive(PartialEq,Clone,Default)]
 pub struct BubbleRequest_Message {
     // message fields
+    time: ::protobuf::SingularField<::std::string::String>,
     author: ::std::option::Option<bool>,
     author_name: ::protobuf::SingularField<::std::string::String>,
     author_pic: ::protobuf::SingularField<::std::string::String>,
@@ -318,7 +319,43 @@ impl BubbleRequest_Message {
         }
     }
 
-    // required bool author = 3;
+    // required string time = 3;
+
+
+    pub fn get_time(&self) -> &str {
+        match self.time.as_ref() {
+            Some(v) => &v,
+            None => "",
+        }
+    }
+    pub fn clear_time(&mut self) {
+        self.time.clear();
+    }
+
+    pub fn has_time(&self) -> bool {
+        self.time.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_time(&mut self, v: ::std::string::String) {
+        self.time = ::protobuf::SingularField::some(v);
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_time(&mut self) -> &mut ::std::string::String {
+        if self.time.is_none() {
+            self.time.set_default();
+        }
+        self.time.as_mut().unwrap()
+    }
+
+    // Take field
+    pub fn take_time(&mut self) -> ::std::string::String {
+        self.time.take().unwrap_or_else(|| ::std::string::String::new())
+    }
+
+    // required bool author = 4;
 
 
     pub fn get_author(&self) -> bool {
@@ -337,7 +374,7 @@ impl BubbleRequest_Message {
         self.author = ::std::option::Option::Some(v);
     }
 
-    // required string author_name = 4;
+    // required string author_name = 5;
 
 
     pub fn get_author_name(&self) -> &str {
@@ -373,7 +410,7 @@ impl BubbleRequest_Message {
         self.author_name.take().unwrap_or_else(|| ::std::string::String::new())
     }
 
-    // optional string author_pic = 5;
+    // optional string author_pic = 6;
 
 
     pub fn get_author_pic(&self) -> &str {
@@ -409,7 +446,7 @@ impl BubbleRequest_Message {
         self.author_pic.take().unwrap_or_else(|| ::std::string::String::new())
     }
 
-    // optional string author_role = 6;
+    // optional string author_role = 7;
 
 
     pub fn get_author_role(&self) -> &str {
@@ -448,6 +485,9 @@ impl BubbleRequest_Message {
 
 impl ::protobuf::Message for BubbleRequest_Message {
     fn is_initialized(&self) -> bool {
+        if self.time.is_none() {
+            return false;
+        }
         if self.author.is_none() {
             return false;
         }
@@ -484,19 +524,22 @@ impl ::protobuf::Message for BubbleRequest_Message {
                     self.oneof_message = ::std::option::Option::Some(BubbleRequest_Message_oneof_oneof_message::photo_message(is.read_message()?));
                 },
                 3 => {
+                    ::protobuf::rt::read_singular_string_into(wire_type, is, &mut self.time)?;
+                },
+                4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
                         return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
                     }
                     let tmp = is.read_bool()?;
                     self.author = ::std::option::Option::Some(tmp);
                 },
-                4 => {
+                5 => {
                     ::protobuf::rt::read_singular_string_into(wire_type, is, &mut self.author_name)?;
                 },
-                5 => {
+                6 => {
                     ::protobuf::rt::read_singular_string_into(wire_type, is, &mut self.author_pic)?;
                 },
-                6 => {
+                7 => {
                     ::protobuf::rt::read_singular_string_into(wire_type, is, &mut self.author_role)?;
                 },
                 _ => {
@@ -511,17 +554,20 @@ impl ::protobuf::Message for BubbleRequest_Message {
     #[allow(unused_variables)]
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
+        if let Some(ref v) = self.time.as_ref() {
+            my_size += ::protobuf::rt::string_size(3, &v);
+        }
         if let Some(v) = self.author {
             my_size += 2;
         }
         if let Some(ref v) = self.author_name.as_ref() {
-            my_size += ::protobuf::rt::string_size(4, &v);
-        }
-        if let Some(ref v) = self.author_pic.as_ref() {
             my_size += ::protobuf::rt::string_size(5, &v);
         }
-        if let Some(ref v) = self.author_role.as_ref() {
+        if let Some(ref v) = self.author_pic.as_ref() {
             my_size += ::protobuf::rt::string_size(6, &v);
+        }
+        if let Some(ref v) = self.author_role.as_ref() {
+            my_size += ::protobuf::rt::string_size(7, &v);
         }
         if let ::std::option::Option::Some(ref v) = self.oneof_message {
             match v {
@@ -541,17 +587,20 @@ impl ::protobuf::Message for BubbleRequest_Message {
     }
 
     fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream<'_>) -> ::protobuf::ProtobufResult<()> {
+        if let Some(ref v) = self.time.as_ref() {
+            os.write_string(3, &v)?;
+        }
         if let Some(v) = self.author {
-            os.write_bool(3, v)?;
+            os.write_bool(4, v)?;
         }
         if let Some(ref v) = self.author_name.as_ref() {
-            os.write_string(4, &v)?;
-        }
-        if let Some(ref v) = self.author_pic.as_ref() {
             os.write_string(5, &v)?;
         }
-        if let Some(ref v) = self.author_role.as_ref() {
+        if let Some(ref v) = self.author_pic.as_ref() {
             os.write_string(6, &v)?;
+        }
+        if let Some(ref v) = self.author_role.as_ref() {
+            os.write_string(7, &v)?;
         }
         if let ::std::option::Option::Some(ref v) = self.oneof_message {
             match v {
@@ -615,6 +664,11 @@ impl ::protobuf::Message for BubbleRequest_Message {
                 BubbleRequest_Message::has_photo_message,
                 BubbleRequest_Message::get_photo_message,
             ));
+            fields.push(::protobuf::reflect::accessor::make_singular_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                "time",
+                |m: &BubbleRequest_Message| { &m.time },
+                |m: &mut BubbleRequest_Message| { &mut m.time },
+            ));
             fields.push(::protobuf::reflect::accessor::make_option_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
                 "author",
                 |m: &BubbleRequest_Message| { &m.author },
@@ -653,6 +707,7 @@ impl ::protobuf::Clear for BubbleRequest_Message {
     fn clear(&mut self) {
         self.oneof_message = ::std::option::Option::None;
         self.oneof_message = ::std::option::Option::None;
+        self.time.clear();
         self.author = ::std::option::Option::None;
         self.author_name.clear();
         self.author_pic.clear();
@@ -1070,62 +1125,66 @@ impl ::protobuf::reflect::ProtobufValue for BubbleRequest_Message_PhotoMessage {
 }
 
 static file_descriptor_proto_data: &'static [u8] = b"\
-    \n\x13proto/message.proto\"\xd4\x03\n\rBubbleRequest\x120\n\x07message\
-    \x18\x01\x20\x03(\x0b2\x16.BubbleRequest.MessageR\x07message\x1a\x90\x03\
+    \n\x13proto/message.proto\"\xe8\x03\n\rBubbleRequest\x120\n\x07message\
+    \x18\x01\x20\x03(\x0b2\x16.BubbleRequest.MessageR\x07message\x1a\xa4\x03\
     \n\x07Message\x12G\n\x0ctext_message\x18\x01\x20\x01(\x0b2\".BubbleReque\
     st.Message.TextMessageH\0R\x0btextMessage\x12J\n\rphoto_message\x18\x02\
     \x20\x01(\x0b2#.BubbleRequest.Message.PhotoMessageH\0R\x0cphotoMessage\
-    \x12\x16\n\x06author\x18\x03\x20\x02(\x08R\x06author\x12\x1f\n\x0bauthor\
-    _name\x18\x04\x20\x02(\tR\nauthorName\x12\x1d\n\nauthor_pic\x18\x05\x20\
-    \x01(\tR\tauthorPic\x12\x1f\n\x0bauthor_role\x18\x06\x20\x01(\tR\nauthor\
-    Role\x1a!\n\x0bTextMessage\x12\x12\n\x04text\x18\x01\x20\x02(\tR\x04text\
-    \x1aC\n\x0cPhotoMessage\x12\x1d\n\nphoto_text\x18\x01\x20\x01(\tR\tphoto\
-    Text\x12\x14\n\x05photo\x18\x02\x20\x02(\tR\x05photoB\x0f\n\roneof_messa\
-    geJ\xb0\x07\n\x06\x12\x04\0\0\x19\x01\n\x08\n\x01\x0c\x12\x03\0\0\x12\n\
-    \n\n\x02\x04\0\x12\x04\x02\0\x19\x01\n\n\n\x03\x04\0\x01\x12\x03\x02\x08\
-    \x15\n\x0c\n\x04\x04\0\x03\0\x12\x04\x03\x02\x16\x03\n\x0c\n\x05\x04\0\
-    \x03\0\x01\x12\x03\x03\n\x11\n\x0e\n\x06\x04\0\x03\0\x03\0\x12\x04\x04\
-    \x04\x06\x05\n\x0e\n\x07\x04\0\x03\0\x03\0\x01\x12\x03\x04\x0c\x17\n\x0f\
-    \n\x08\x04\0\x03\0\x03\0\x02\0\x12\x03\x05\x06\x1f\n\x10\n\t\x04\0\x03\0\
-    \x03\0\x02\0\x04\x12\x03\x05\x06\x0e\n\x10\n\t\x04\0\x03\0\x03\0\x02\0\
-    \x05\x12\x03\x05\x0f\x15\n\x10\n\t\x04\0\x03\0\x03\0\x02\0\x01\x12\x03\
-    \x05\x16\x1a\n\x10\n\t\x04\0\x03\0\x03\0\x02\0\x03\x12\x03\x05\x1d\x1e\n\
-    \x0e\n\x06\x04\0\x03\0\x03\x01\x12\x04\x08\x04\x0b\x05\n\x0e\n\x07\x04\0\
-    \x03\0\x03\x01\x01\x12\x03\x08\x0c\x18\n\x0f\n\x08\x04\0\x03\0\x03\x01\
-    \x02\0\x12\x03\t\x06%\n\x10\n\t\x04\0\x03\0\x03\x01\x02\0\x04\x12\x03\t\
-    \x06\x0e\n\x10\n\t\x04\0\x03\0\x03\x01\x02\0\x05\x12\x03\t\x0f\x15\n\x10\
-    \n\t\x04\0\x03\0\x03\x01\x02\0\x01\x12\x03\t\x16\x20\n\x10\n\t\x04\0\x03\
-    \0\x03\x01\x02\0\x03\x12\x03\t#$\n\x0f\n\x08\x04\0\x03\0\x03\x01\x02\x01\
-    \x12\x03\n\x06\x20\n\x10\n\t\x04\0\x03\0\x03\x01\x02\x01\x04\x12\x03\n\
-    \x06\x0e\n\x10\n\t\x04\0\x03\0\x03\x01\x02\x01\x05\x12\x03\n\x0f\x15\n\
-    \x10\n\t\x04\0\x03\0\x03\x01\x02\x01\x01\x12\x03\n\x16\x1b\n\x10\n\t\x04\
-    \0\x03\0\x03\x01\x02\x01\x03\x12\x03\n\x1e\x1f\n\x0e\n\x06\x04\0\x03\0\
-    \x08\0\x12\x04\r\x04\x10\x05\n\x0e\n\x07\x04\0\x03\0\x08\0\x01\x12\x03\r\
-    \n\x17\n\r\n\x06\x04\0\x03\0\x02\0\x12\x03\x0e\x06#\n\x0e\n\x07\x04\0\
-    \x03\0\x02\0\x06\x12\x03\x0e\x06\x11\n\x0e\n\x07\x04\0\x03\0\x02\0\x01\
-    \x12\x03\x0e\x12\x1e\n\x0e\n\x07\x04\0\x03\0\x02\0\x03\x12\x03\x0e!\"\n\
-    \r\n\x06\x04\0\x03\0\x02\x01\x12\x03\x0f\x06%\n\x0e\n\x07\x04\0\x03\0\
-    \x02\x01\x06\x12\x03\x0f\x06\x12\n\x0e\n\x07\x04\0\x03\0\x02\x01\x01\x12\
-    \x03\x0f\x13\x20\n\x0e\n\x07\x04\0\x03\0\x02\x01\x03\x12\x03\x0f#$\n\r\n\
-    \x06\x04\0\x03\0\x02\x02\x12\x03\x12\x04\x1d\n\x0e\n\x07\x04\0\x03\0\x02\
-    \x02\x04\x12\x03\x12\x04\x0c\n\x0e\n\x07\x04\0\x03\0\x02\x02\x05\x12\x03\
-    \x12\r\x11\n\x0e\n\x07\x04\0\x03\0\x02\x02\x01\x12\x03\x12\x12\x18\n\x0e\
-    \n\x07\x04\0\x03\0\x02\x02\x03\x12\x03\x12\x1b\x1c\n\r\n\x06\x04\0\x03\0\
-    \x02\x03\x12\x03\x13\x04$\n\x0e\n\x07\x04\0\x03\0\x02\x03\x04\x12\x03\
-    \x13\x04\x0c\n\x0e\n\x07\x04\0\x03\0\x02\x03\x05\x12\x03\x13\r\x13\n\x0e\
-    \n\x07\x04\0\x03\0\x02\x03\x01\x12\x03\x13\x14\x1f\n\x0e\n\x07\x04\0\x03\
-    \0\x02\x03\x03\x12\x03\x13\"#\n\r\n\x06\x04\0\x03\0\x02\x04\x12\x03\x14\
-    \x04#\n\x0e\n\x07\x04\0\x03\0\x02\x04\x04\x12\x03\x14\x04\x0c\n\x0e\n\
-    \x07\x04\0\x03\0\x02\x04\x05\x12\x03\x14\r\x13\n\x0e\n\x07\x04\0\x03\0\
-    \x02\x04\x01\x12\x03\x14\x14\x1e\n\x0e\n\x07\x04\0\x03\0\x02\x04\x03\x12\
-    \x03\x14!\"\n\r\n\x06\x04\0\x03\0\x02\x05\x12\x03\x15\x04$\n\x0e\n\x07\
-    \x04\0\x03\0\x02\x05\x04\x12\x03\x15\x04\x0c\n\x0e\n\x07\x04\0\x03\0\x02\
-    \x05\x05\x12\x03\x15\r\x13\n\x0e\n\x07\x04\0\x03\0\x02\x05\x01\x12\x03\
-    \x15\x14\x1f\n\x0e\n\x07\x04\0\x03\0\x02\x05\x03\x12\x03\x15\"#\n\x0b\n\
-    \x04\x04\0\x02\0\x12\x03\x18\x02\x1f\n\x0c\n\x05\x04\0\x02\0\x04\x12\x03\
-    \x18\x02\n\n\x0c\n\x05\x04\0\x02\0\x06\x12\x03\x18\x0b\x12\n\x0c\n\x05\
-    \x04\0\x02\0\x01\x12\x03\x18\x13\x1a\n\x0c\n\x05\x04\0\x02\0\x03\x12\x03\
-    \x18\x1d\x1e\
+    \x12\x12\n\x04time\x18\x03\x20\x02(\tR\x04time\x12\x16\n\x06author\x18\
+    \x04\x20\x02(\x08R\x06author\x12\x1f\n\x0bauthor_name\x18\x05\x20\x02(\t\
+    R\nauthorName\x12\x1d\n\nauthor_pic\x18\x06\x20\x01(\tR\tauthorPic\x12\
+    \x1f\n\x0bauthor_role\x18\x07\x20\x01(\tR\nauthorRole\x1a!\n\x0bTextMess\
+    age\x12\x12\n\x04text\x18\x01\x20\x02(\tR\x04text\x1aC\n\x0cPhotoMessage\
+    \x12\x1d\n\nphoto_text\x18\x01\x20\x01(\tR\tphotoText\x12\x14\n\x05photo\
+    \x18\x02\x20\x02(\tR\x05photoB\x0f\n\roneof_messageJ\xff\x07\n\x06\x12\
+    \x04\0\0\x1a\x01\n\x08\n\x01\x0c\x12\x03\0\0\x12\n\n\n\x02\x04\0\x12\x04\
+    \x02\0\x1a\x01\n\n\n\x03\x04\0\x01\x12\x03\x02\x08\x15\n\x0c\n\x04\x04\0\
+    \x03\0\x12\x04\x03\x02\x17\x03\n\x0c\n\x05\x04\0\x03\0\x01\x12\x03\x03\n\
+    \x11\n\x0e\n\x06\x04\0\x03\0\x03\0\x12\x04\x04\x04\x06\x05\n\x0e\n\x07\
+    \x04\0\x03\0\x03\0\x01\x12\x03\x04\x0c\x17\n\x0f\n\x08\x04\0\x03\0\x03\0\
+    \x02\0\x12\x03\x05\x06\x1f\n\x10\n\t\x04\0\x03\0\x03\0\x02\0\x04\x12\x03\
+    \x05\x06\x0e\n\x10\n\t\x04\0\x03\0\x03\0\x02\0\x05\x12\x03\x05\x0f\x15\n\
+    \x10\n\t\x04\0\x03\0\x03\0\x02\0\x01\x12\x03\x05\x16\x1a\n\x10\n\t\x04\0\
+    \x03\0\x03\0\x02\0\x03\x12\x03\x05\x1d\x1e\n\x0e\n\x06\x04\0\x03\0\x03\
+    \x01\x12\x04\x08\x04\x0b\x05\n\x0e\n\x07\x04\0\x03\0\x03\x01\x01\x12\x03\
+    \x08\x0c\x18\n\x0f\n\x08\x04\0\x03\0\x03\x01\x02\0\x12\x03\t\x06%\n\x10\
+    \n\t\x04\0\x03\0\x03\x01\x02\0\x04\x12\x03\t\x06\x0e\n\x10\n\t\x04\0\x03\
+    \0\x03\x01\x02\0\x05\x12\x03\t\x0f\x15\n\x10\n\t\x04\0\x03\0\x03\x01\x02\
+    \0\x01\x12\x03\t\x16\x20\n\x10\n\t\x04\0\x03\0\x03\x01\x02\0\x03\x12\x03\
+    \t#$\n\x0f\n\x08\x04\0\x03\0\x03\x01\x02\x01\x12\x03\n\x06\x20\n\x10\n\t\
+    \x04\0\x03\0\x03\x01\x02\x01\x04\x12\x03\n\x06\x0e\n\x10\n\t\x04\0\x03\0\
+    \x03\x01\x02\x01\x05\x12\x03\n\x0f\x15\n\x10\n\t\x04\0\x03\0\x03\x01\x02\
+    \x01\x01\x12\x03\n\x16\x1b\n\x10\n\t\x04\0\x03\0\x03\x01\x02\x01\x03\x12\
+    \x03\n\x1e\x1f\n\x0e\n\x06\x04\0\x03\0\x08\0\x12\x04\r\x04\x10\x05\n\x0e\
+    \n\x07\x04\0\x03\0\x08\0\x01\x12\x03\r\n\x17\n\r\n\x06\x04\0\x03\0\x02\0\
+    \x12\x03\x0e\x06#\n\x0e\n\x07\x04\0\x03\0\x02\0\x06\x12\x03\x0e\x06\x11\
+    \n\x0e\n\x07\x04\0\x03\0\x02\0\x01\x12\x03\x0e\x12\x1e\n\x0e\n\x07\x04\0\
+    \x03\0\x02\0\x03\x12\x03\x0e!\"\n\r\n\x06\x04\0\x03\0\x02\x01\x12\x03\
+    \x0f\x06%\n\x0e\n\x07\x04\0\x03\0\x02\x01\x06\x12\x03\x0f\x06\x12\n\x0e\
+    \n\x07\x04\0\x03\0\x02\x01\x01\x12\x03\x0f\x13\x20\n\x0e\n\x07\x04\0\x03\
+    \0\x02\x01\x03\x12\x03\x0f#$\n\r\n\x06\x04\0\x03\0\x02\x02\x12\x03\x12\
+    \x04\x1d\n\x0e\n\x07\x04\0\x03\0\x02\x02\x04\x12\x03\x12\x04\x0c\n\x0e\n\
+    \x07\x04\0\x03\0\x02\x02\x05\x12\x03\x12\r\x13\n\x0e\n\x07\x04\0\x03\0\
+    \x02\x02\x01\x12\x03\x12\x14\x18\n\x0e\n\x07\x04\0\x03\0\x02\x02\x03\x12\
+    \x03\x12\x1b\x1c\n\r\n\x06\x04\0\x03\0\x02\x03\x12\x03\x13\x04\x1d\n\x0e\
+    \n\x07\x04\0\x03\0\x02\x03\x04\x12\x03\x13\x04\x0c\n\x0e\n\x07\x04\0\x03\
+    \0\x02\x03\x05\x12\x03\x13\r\x11\n\x0e\n\x07\x04\0\x03\0\x02\x03\x01\x12\
+    \x03\x13\x12\x18\n\x0e\n\x07\x04\0\x03\0\x02\x03\x03\x12\x03\x13\x1b\x1c\
+    \n\r\n\x06\x04\0\x03\0\x02\x04\x12\x03\x14\x04$\n\x0e\n\x07\x04\0\x03\0\
+    \x02\x04\x04\x12\x03\x14\x04\x0c\n\x0e\n\x07\x04\0\x03\0\x02\x04\x05\x12\
+    \x03\x14\r\x13\n\x0e\n\x07\x04\0\x03\0\x02\x04\x01\x12\x03\x14\x14\x1f\n\
+    \x0e\n\x07\x04\0\x03\0\x02\x04\x03\x12\x03\x14\"#\n\r\n\x06\x04\0\x03\0\
+    \x02\x05\x12\x03\x15\x04#\n\x0e\n\x07\x04\0\x03\0\x02\x05\x04\x12\x03\
+    \x15\x04\x0c\n\x0e\n\x07\x04\0\x03\0\x02\x05\x05\x12\x03\x15\r\x13\n\x0e\
+    \n\x07\x04\0\x03\0\x02\x05\x01\x12\x03\x15\x14\x1e\n\x0e\n\x07\x04\0\x03\
+    \0\x02\x05\x03\x12\x03\x15!\"\n\r\n\x06\x04\0\x03\0\x02\x06\x12\x03\x16\
+    \x04$\n\x0e\n\x07\x04\0\x03\0\x02\x06\x04\x12\x03\x16\x04\x0c\n\x0e\n\
+    \x07\x04\0\x03\0\x02\x06\x05\x12\x03\x16\r\x13\n\x0e\n\x07\x04\0\x03\0\
+    \x02\x06\x01\x12\x03\x16\x14\x1f\n\x0e\n\x07\x04\0\x03\0\x02\x06\x03\x12\
+    \x03\x16\"#\n\x0b\n\x04\x04\0\x02\0\x12\x03\x19\x02\x1f\n\x0c\n\x05\x04\
+    \0\x02\0\x04\x12\x03\x19\x02\n\n\x0c\n\x05\x04\0\x02\0\x06\x12\x03\x19\
+    \x0b\x12\n\x0c\n\x05\x04\0\x02\0\x01\x12\x03\x19\x13\x1a\n\x0c\n\x05\x04\
+    \0\x02\0\x03\x12\x03\x19\x1d\x1e\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;
