@@ -9,6 +9,8 @@
 </div>
 <p align="center">© 2020 Pool Party Corp. All rights reserved.</p>
 
+[comment]: <> (TODO: use preview from botostore site)
+
 ## Usage guide
 
 Add [`@BubblifierBot`](https://t.me/BubblifierBot) to the chat to be able to create custom bubble sticker packs using
@@ -20,9 +22,43 @@ following commands:
 
 ## Structure
 
-![Project Structure](assets/project-schema.jpg)
+The project structure consisting of the main three component is as follows:
+
+![Project Structure](assets/readme/project-schema.jpg)
+
+The communication for request processing:
+
+![Microservices communication Schema](assets/readme/communication-schema.svg)
 
 ## Tools and Libraries
+
+### Proto ([proto/](proto/))
+
+- [Protocol Buffers](https://developers.google.com/protocol-buffers) - language-neutral, platform-neutral
+  extensible mechanism for serializing structured data
+
+- [Rust protobuf](https://github.com/stepancheg/rust-protobuf) - rust implementation of Google protocol buffers
+
+- [TypeScript protobuf](https://github.com/stephenh/ts-proto) - an idiomatic protobuf generator for TypeScript
+
+> Language structure exporting files generation:
+>
+> - Have `protoc` package installed
+>
+> - Rust:
+>
+>   ```shell
+>   cargo install protobuf-codegen
+>   protoc --rust_out api/src --plugin $HOME/.cargo/bin/protoc-gen-rust proto/*.proto
+>   ```
+>
+> - JavaScript:
+>
+>   ```shell
+>   cd client
+>   npm install ts-proto
+>   protoc --proto_path ../proto --ts_proto_out src --plugin node_modules/.bin/protoc-gen-ts_proto ../proto/*.proto
+>   ```
 
 ### Bubble rendering server ([client/](client/))
 
