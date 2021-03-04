@@ -8,6 +8,8 @@ message BubbleRequest {
 
     message PhotoMessage {
       optional string photo_text = 1;
+
+      // photo url
       required string photo = 2;
     }
 
@@ -19,9 +21,15 @@ message BubbleRequest {
     required string time = 3;
     required bool author = 4;
     required string author_name = 5;
+
+    // author picture url
     optional string author_pic = 6;
     optional string author_role = 7;
   }
 
   repeated Message message = 1;
+}
+
+message Response {
+  required string id = 1;
 }

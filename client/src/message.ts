@@ -13,6 +13,7 @@ export interface BubbleRequest_Message {
   time: string;
   author: boolean;
   authorName: string;
+  /** author picture url */
   authorPic: string;
   authorRole: string;
 }
@@ -23,7 +24,12 @@ export interface BubbleRequest_Message_TextMessage {
 
 export interface BubbleRequest_Message_PhotoMessage {
   photoText: string;
+  /** photo url */
   photo: string;
+}
+
+export interface Response {
+  id: string;
 }
 
 const baseBubbleRequest: object = {};
@@ -401,6 +407,61 @@ export const BubbleRequest_Message_PhotoMessage = {
       message.photo = object.photo;
     } else {
       message.photo = '';
+    }
+    return message;
+  },
+};
+
+const baseResponse: object = { id: '' };
+
+export const Response = {
+  encode(message: Response, writer: Writer = Writer.create()): Writer {
+    if (message.id !== '') {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): Response {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseResponse } as Response;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.id = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Response {
+    const message = { ...baseResponse } as Response;
+    if (object.id !== undefined && object.id !== null) {
+      message.id = String(object.id);
+    } else {
+      message.id = '';
+    }
+    return message;
+  },
+
+  toJSON(message: Response): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = message.id);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<Response>): Response {
+    const message = { ...baseResponse } as Response;
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id;
+    } else {
+      message.id = '';
     }
     return message;
   },
