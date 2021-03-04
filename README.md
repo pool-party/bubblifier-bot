@@ -2,7 +2,6 @@
 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square&logo=prettier)](https://github.com/prettier/prettier)
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/pool-party/bubblifier-bot?logo=codefactor)](https://www.codefactor.io/repository/github/pool-party/bubblifier-bot)
-[![TypeScript Lang](https://img.shields.io/github/languages/top/pool-party/bubblifier-bot?logo=TypeScript)](http://typescriptlang.org/)
 [![Bubblifier Bot](https://img.shields.io/badge/telegram-Bubblifier_Bot-blue?logo=Telegram)](https://t.me/BubblifierBot/)
 
 <div align="center">
@@ -30,3 +29,19 @@ following commands:
 - [TypeScript](http://typescriptlang.org/) language
 
 - [React](https://reactjs.org/) - a JavaScript library for building user interfaces
+
+### Telegram bot part ([api/](api/))
+
+- [Rust](https://www.rust-lang.org/) programming language
+
+- [Teloxide](https://github.com/teloxide/teloxide/) - a full-featured framework that empowers you to easily build
+  [Telegram bots](https://telegram.org/blog/bot-revolution) using the
+  [`async`/`await`](https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html)
+  syntax in Rust
+
+- [Diesel](https://github.com/diesel-rs/diesel) - a safe, extensible ORM and Query Builder for Rust
+
+- [Image](https://github.com/image-rs/image) - encoding and decoding images in Rust
+
+- [Thirtyfour](https://github.com/stevepryde/thirtyfour) - [Selenium](https://www.selenium.dev/) WebDriver client
+  for Rust

@@ -1,0 +1,35 @@
+[package]
+name = "bubblifier-bot"
+version = "0.0.1"
+edition = "2018"
+description = "Telegram Bubblifier Bot"
+homepage = "https://github.com/pool-party/bubblifier-bot"
+repository = "https://github.com/pool-party/bubblifier-bot"
+documentation = "https://github.com/pool-party/bubblifier-bot#readme"
+readme = "../README.md"
+keywords = ["telegram"]
+license-file = "../LICENSE.md"
+authors = ["Pool Party Corp"]
+
+[dependencies]
+# telegram
+# TODO switch to new teloxide version as it arrives
+teloxide = { git = "https://github.com/QuentinI/teloxide", branch = "dev", features = ["macros"] }
+tokio = { version = "0.2", features = ["full"] }
+
+# database
+diesel = { version = "1.4.5", features = ["postgres"] }
+dotenv = "0.15.0"
+
+# other
+anyhow = "1.0"
+
+log = "0.4"
+pretty_env_logger = "0.4"
+
+config = "0.10"
+serde = { version = "1.0.123", features = ["derive"] }
+
+image = "0.23.13"
+uuid = { version = "0.8.1", features = ["serde", "v4"] }
+thirtyfour = "0.22.3"
