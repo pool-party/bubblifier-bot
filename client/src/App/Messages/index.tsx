@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.css';
 
-function Message() {
+function Messages() {
   return (
     <React.Fragment>
       {/* Optional classes: [message-self [droplet [droplet-self]]] */}
@@ -86,4 +86,4 @@ function Message() {
   );
 }
 
-export default Message;
+export default Messages;
