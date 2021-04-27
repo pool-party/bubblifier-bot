@@ -2,5 +2,5 @@
 logo = "../assets/title-512.png"
 
 [selenium]
-server = "http://localhost:4444"
+server = "http://localhost:4444/wd/hub"
 url = "https://google.com"

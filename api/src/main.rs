@@ -1,7 +1,6 @@
 #[macro_use]
 extern crate diesel;
 
-use anyhow::anyhow;
 use diesel::{pg::PgConnection, prelude::*};
 use std::result::Result;
 use std::sync::{Arc, Mutex};
@@ -12,8 +11,10 @@ pub mod bubble;
 pub mod models;
 pub mod schema;
 pub mod settings;
+pub mod utils;
 
 use self::settings::Settings;
+use self::utils::Clown;
 
 fn establish_connection(url: String) -> Arc<Mutex<PgConnection>> {
     Arc::new(Mutex::new(
@@ -22,7 +23,7 @@ fn establish_connection(url: String) -> Arc<Mutex<PgConnection>> {
 }
 
 #[derive(BotCommand)]
-#[command(rename = "lowercase", description = "Available commands")]
+#[command(rename = "lowercase", description = "Available commands:\n")]
 enum Command {
     #[command(description = "start bubblifying")]
     Start,
@@ -30,16 +31,6 @@ enum Command {
     Help,
     #[command(description = "create a bubble sticker")]
     Bubble,
-}
-
-pub trait Clown<T> {
-    fn clown(self) -> Result<T, anyhow::Error>;
-}
-
-impl<R, E: std::fmt::Display> Clown<R> for Result<R, E> {
-    fn clown(self) -> Result<R, anyhow::Error> {
-        self.map_err(|e| anyhow!("{}", e))
-    }
 }
 
 async fn answer<R: Requester>(

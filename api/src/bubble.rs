@@ -1,7 +1,7 @@
 use crate::models::*;
 use crate::schema::stickerpack::dsl::*;
 use crate::settings::Settings;
-use crate::Clown;
+use crate::utils::Clown;
 
 use anyhow::*;
 use diesel::{pg::PgConnection, prelude::*};
@@ -194,11 +194,20 @@ async fn update_sticker_pack_cover<R: Requester>(
 }
 
 async fn render_bubble(_message: &str, settings: Arc<Settings>) -> Result<InputFile> {
+    // TODO use producer-consumer queue with a small number of browser instances
     let caps = DesiredCapabilities::firefox();
     let driver = WebDriver::new(&settings.selenium.server, &caps).await?;
 
+    log::info!("Driver connection is established");
+
     driver.get(&settings.selenium.url).await?;
+
+    log::info!("Driver has opened url");
+
     let screenshot =
         driver.find_element(By::ClassName("L3eUgb")).await?.screenshot_as_png().await?;
+
+    driver.quit().await?;
+
     Ok(InputFile::memory("bubble.png", screenshot))
 }
