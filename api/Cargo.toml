@@ -13,12 +13,13 @@ authors = ["Pool Party Corp"]
 
 [dependencies]
 # telegram
-# TODO switch to new teloxide version as it arrives
-teloxide = { git = "https://github.com/QuentinI/teloxide", branch = "dev", features = ["macros"] }
-tokio = { version = "0.2", features = ["full"] }
+teloxide = { version = "0.4.0", features = ["macros"] }
+tokio = { version = "1.5.0", features = ["full"] }
+tokio-stream = "0.1.5"
+bytes = "1.0.1"
 
 # database
-diesel = { version = "1.4.5", features = ["postgres"] }
+diesel = { version = "1.4.6", features = ["postgres"] }
 dotenv = "0.15.0"
 
 # other
@@ -27,9 +28,8 @@ anyhow = "1.0"
 log = "0.4"
 pretty_env_logger = "0.4"
 
-config = "0.10"
-serde = { version = "1.0.123", features = ["derive"] }
+config = "0.11.0"
+serde = { version = "1.0.125", features = ["derive"] }
 
-image = "0.23.13"
-uuid = { version = "0.8.1", features = ["serde", "v4"] }
-thirtyfour = "0.22.3"
+image = "0.23.14"
+thirtyfour = "0.23.0"

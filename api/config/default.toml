@@ -1,2 +1,6 @@
 [pack]
 logo = "../assets/title-512.png"
+
+[selenium]
+server = "http://localhost:4444"
+url = "https://google.com"

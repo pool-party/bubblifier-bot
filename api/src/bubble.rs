@@ -1,16 +1,19 @@
 use crate::models::*;
 use crate::schema::stickerpack::dsl::*;
 use crate::settings::Settings;
+use crate::Clown;
+
 use anyhow::*;
 use diesel::{pg::PgConnection, prelude::*};
-use std::env::temp_dir;
+use image::io::Reader as ImageReader;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-use teloxide::{prelude::*, requests::RequestWithFile, types::*};
+use teloxide::{net::Download, prelude::*, requests::Request, types::*};
 use thirtyfour::prelude::*;
 
-pub async fn bubble(
-    context: &UpdateWithCx<Message>,
+pub async fn bubble<R: Requester>(
+    bot: Bot,
+    context: &UpdateWithCx<R, Message>,
     settings: Arc<Settings>,
     connection: Arc<Mutex<PgConnection>>,
 ) -> Result<()> {
@@ -32,21 +35,26 @@ pub async fn bubble(
 
     let pack = match data_base_pack {
         Some(p) => p,
-        None => create_sticker_pack(&context, settings.clone(), connection).await?,
+        None => create_sticker_pack(bot.clone(), &context, settings.clone(), connection).await?,
     };
 
     // TODO TEMP: answer w/ a made one
     let first_sticker = InputFile::FileId(
-        (&context.bot.get_sticker_set(pack.name.clone()).send().await?.stickers[0]).file_id.clone(),
+        (&context.requester.get_sticker_set(pack.name.clone()).send().await.clown()?.stickers[0])
+            .file_id
+            .clone(),
     );
-    context.answer_sticker(first_sticker).send().await.expect("No file manipulations expected")?;
+    context.answer_sticker(first_sticker).send().await.clown()?;
 
-    // let bubble = render_bubble(&text, settings).await?;
+    let bubble = render_bubble(&text, settings).await?;
+
+    context.answer_photo(bubble).send().await.clown()?;
 
     // match context
     //     .bot
     //     .add_sticker_to_set(
-    //         pack.user_id as i32,
+    //         pack.user_
+    // id as i32,
     //         pack.name,
     //         StickerType::Png(bubble),
     //         "💭", // TODO smth better
@@ -63,7 +71,7 @@ pub async fn bubble(
     //         ))
     //         .send()
     //         .await
-    //         .expect("No file manipulations expected");
+    //         .clown()?;
     //     }
     //     Err(err) => {
     //         context.answer("Failed to add a sticker to your sticker pack").send().await?;
@@ -73,8 +81,9 @@ pub async fn bubble(
     Ok(())
 }
 
-async fn create_sticker_pack(
-    context: &UpdateWithCx<Message>,
+async fn create_sticker_pack<R: Requester>(
+    bot: Bot,
+    context: &UpdateWithCx<R, Message>,
     settings: Arc<Settings>,
     connection: Arc<Mutex<PgConnection>>,
 ) -> Result<StickerPack> {
@@ -86,16 +95,14 @@ async fn create_sticker_pack(
         message_chat_id.to_string().replace("-", "minus"),
         &settings.teloxide.name
     );
+
     let chat = &context.update.chat;
+
     let chat_name = match chat.kind.to_owned() {
         ChatKind::Public(public_chat) => public_chat.title,
         ChatKind::Private(private_chat) => private_chat.username,
-        _ => panic!("Unexpected chat kind met"),
-    }
-    .map(|x| x + " ")
-    .unwrap_or(String::from(""));
-
-    let sticker_pack_title = chat_name + "Bubbles";
+    };
+    let sticker_pack_title = chat_name.map(|x| x + " ").unwrap_or(String::from("")) + "Bubbles";
 
     log::info!(
         "Creating sticker pack \"{}\" (https://t.me/addstickers/{}) with {} owner",
@@ -105,19 +112,21 @@ async fn create_sticker_pack(
     );
 
     context
-        .bot
+        .requester
         .create_new_sticker_set(
             sender_id,
             sticker_pack_name.clone(),
             sticker_pack_title,
-            StickerType::Png(InputFile::File(PathBuf::from(&settings.pack.logo))),
+            InputSticker::Png(InputFile::File(PathBuf::from(&settings.pack.logo))),
             "💭",
         )
         .send()
         .await
-        .unwrap()?;
+        .clown()?;
 
-    if let Err(error) = update_sticker_pack_cover(context, &sticker_pack_name, sender_id).await {
+    if let Err(error) =
+        update_sticker_pack_cover(bot.clone(), context, &sticker_pack_name, sender_id).await
+    {
         log::error!("Failed to update sticker pack cover: {}", error);
     }
 
@@ -137,68 +146,59 @@ async fn create_sticker_pack(
     })
 }
 
-async fn update_sticker_pack_cover(
-    context: &UpdateWithCx<Message>,
+async fn update_sticker_pack_cover<R: Requester>(
+    bot: Bot,
+    context: &UpdateWithCx<R, Message>,
     sticker_pack_name: &str,
-    sender_id: i32,
+    sender_id: i64,
 ) -> Result<()> {
     log::info!("Updating sticker pack cover ({} of {})", sticker_pack_name, sender_id);
 
-    if let Some(chat_photo) = context.bot.get_chat(context.chat_id()).send().await?.photo {
-        let File { file_path, .. } = context.bot.get_file(chat_photo.small_file_id).send().await?;
-
-        let mut download_path = temp_dir();
-        let random_id = uuid::Uuid::new_v4();
-        download_path.push(format!("{}.jpg", random_id));
-        log::info!("Creating temporary file: {:?}", download_path.to_str());
-
-        let file = tokio::fs::File::create(download_path.clone()).await?;
-
-        let mut save_path = temp_dir();
-        save_path.push(format!("{}.png", random_id));
-
-        let file_manipulations =
-            |bot: Bot, mut file, download_path: PathBuf, save_path: PathBuf| async move {
-                bot.download_file(&file_path, &mut file).await?;
-
-                image::open(download_path.clone())?
-                    .resize(100, 100, image::imageops::FilterType::Triangle)
-                    .save(save_path.clone())?;
-
-                bot.set_sticker_set_thumb(sticker_pack_name, sender_id)
-                    .thumb(InputFile::File(save_path.clone()))
-                    .send()
-                    .await??;
-
-                Ok::<(), anyhow::Error>(())
-            };
-
-        if let Err(_err) =
-            file_manipulations(context.bot.clone(), file, download_path.clone(), save_path.clone())
-                .await
-        {
-            tokio::fs::remove_file(download_path).await.ok();
-            tokio::fs::remove_file(save_path).await.ok();
+    let chat_photo = match context.requester.get_chat(context.chat_id()).send().await.clown()?.photo
+    {
+        Some(s) => s,
+        None => {
+            log::info!("No chat photo found in {}", sender_id);
+            return Ok(());
         }
+    };
 
-        log::info!(
-            "Sticker pack cover updated successfully ({} of {})",
-            sticker_pack_name,
-            sender_id
-        );
-    } else {
-        log::info!("No chat photo found in {}", sender_id);
-    }
+    let File { file_path, .. } =
+        context.requester.get_file(chat_photo.small_file_id).send().await.clown()?;
+
+    let raw_data = bot
+        .download_file_stream(&file_path)
+        .collect::<Vec<Result<bytes::Bytes, _>>>()
+        .await
+        .into_iter()
+        .collect::<Result<Vec<bytes::Bytes>, _>>()
+        .map(|v| v.into_iter().flat_map(|b| b.into_iter()).collect::<bytes::Bytes>())?;
+
+    let transformed_data = ImageReader::new(std::io::Cursor::new(raw_data))
+        .with_guessed_format()?
+        .decode()?
+        .resize(100, 100, image::imageops::FilterType::Triangle)
+        .to_bytes();
+
+    context
+        .requester
+        .set_sticker_set_thumb(sticker_pack_name, sender_id)
+        .thumb(InputFile::memory(file_path, transformed_data))
+        .send()
+        .await
+        .clown()?;
+
+    log::info!("Sticker pack cover updated successfully ({} of {})", sticker_pack_name, sender_id);
 
     Ok(())
 }
 
-async fn render_bubble(message: &str, settings: Arc<Settings>) -> Result<InputFile> {
-    let caps = DesiredCapabilities::chrome();
+async fn render_bubble(_message: &str, settings: Arc<Settings>) -> Result<InputFile> {
+    let caps = DesiredCapabilities::firefox();
     let driver = WebDriver::new(&settings.selenium.server, &caps).await?;
 
     driver.get(&settings.selenium.url).await?;
     let screenshot =
-        driver.find_element(By::ClassName("message")).await?.screenshot_as_png().await?;
+        driver.find_element(By::ClassName("L3eUgb")).await?.screenshot_as_png().await?;
     Ok(InputFile::memory("bubble.png", screenshot))
 }
