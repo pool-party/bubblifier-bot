@@ -66,6 +66,9 @@ The communication for request processing:
 
 - [React](https://reactjs.org/) - a JavaScript library for building user interfaces
 
+- [Selenoid](https://aerokube.com/selenoid/latest/) - a powerful Golang implementation of original
+  [Selenium](https://selenium.dev/) hub code, which is using Docker to launch browsers
+
 ### Telegram bot part ([api/](api/))
 
 - [Rust](https://www.rust-lang.org/) programming language
@@ -81,3 +84,19 @@ The communication for request processing:
 
 - [Thirtyfour](https://github.com/stevepryde/thirtyfour) - [Selenium](https://www.selenium.dev/) WebDriver client
   for Rust
+
+### [Selenoid](https://aerokube.com/selenoid/latest/) ([selenoid/](selenoid/))
+
+Selenoid is a powerful Golang implementation of original [Selenium](https://selenium.dev/) hub code,
+which is using Docker to launch browsers
+
+### [Docker](https://docs.docker.com/)
+
+- [Docker compose](https://docs.docker.com/compose) - a tool for defining and runing multi-container Docker applications.
+
+In order to run Selenoid do the following steps:
+
+```shell
+docker pull selenoid/firefox:87.0
+docker-compose up --build -d
+```

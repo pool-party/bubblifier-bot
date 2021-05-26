@@ -1,0 +1,21 @@
+{
+  "firefox": {
+    "default": "87.0",
+    "versions": {
+      "87.0": {
+        "image": "selenoid/firefox:87.0",
+        "port": "4444",
+        "tmpfs": {
+          "/tmp": "size=512m"
+        },
+        "path": "/wd/hub",
+        "volumes": ["/from:/to:ro"],
+        "env": ["TZ=Europe/Moscow"],
+        "hosts": ["example.com:192.168.0.1"],
+        "shmSize": 268435456,
+        "cpu": "1.0",
+        "mem": "512m"
+      }
+    }
+  }
+}
