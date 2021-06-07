@@ -36,11 +36,8 @@ impl Settings {
         let mut s = Config::new();
 
         s.merge(File::with_name("config/default"))?;
-        s.merge(Environment::with_prefix("DATABASE_URL"))?;
-        s.merge(Environment::with_prefix("TELOXIDE_TOKEN"))?;
-        s.merge(Environment::with_prefix("SELENIUM_SERVER"))?;
-        s.merge(Environment::with_prefix("SELENIUM_URL"))?;
         s.merge(File::with_name("config/develop").required(false))?;
+        s.merge(Environment::with_prefix("APP").separator("_"))?;
 
         s.try_into()
     }

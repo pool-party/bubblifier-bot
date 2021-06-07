@@ -91,7 +91,7 @@ async fn create_sticker_pack<R: Requester>(
 
     let sender_id = context.update.from().map(|x| x.id).expect("User is not specified");
     let sticker_pack_name = format!(
-        "{}_by_{}",
+        "bubbles_{}_by_{}",
         message_chat_id.to_string().replace("-", "minus"),
         &settings.teloxide.name
     );
