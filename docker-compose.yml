@@ -1,12 +1,30 @@
-version: "3"
+version: "3.6"
+
 services:
   selenoid:
-    network_mode: bridge
-    image: aerokube/selenoid:latest-release
-    volumes:
-      - "./selenoid:/etc/selenoid"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "./selenoid:/opt/selenoid/logs"
-    command: ["-conf", "/etc/selenoid/browsers.json", "-log-output-dir", "/opt/selenoid"]
+    image: selenoid/firefox:87.0
     ports:
       - "4444:4444"
+
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./api/migrations/2021-02-18-175138_initial/up.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api:
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile
+    depends_on:
+      - postgres
+      - selenoid
+    environment:
+      - APP_DATABASE_URL=postgres://postgres@postgres:5432
+      - APP_SELENIUM_SERVER=http://selenoid:4444/wd/hub
+      - APP_TELOXIDE_TOKEN=${TELOXIDE_TOKEN}
+      - APP_TELOXIDE_NAME=${TELOXIDE_NAME}
+    command: bash -c 'while !</dev/tcp/postgres/5432; do sleep 2; done; target/release/bubblifier-bot'
